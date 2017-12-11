@@ -14,7 +14,7 @@ import os
 
 # SETTINGS
 class var():   
-    infomessage = 'Twitch Trivia Bot loaded. Version 1.0.2. Developed by cleartonic.'
+    infomessage = 'Twitch Trivia Bot loaded. Version 0.1.2. Developed by cleartonic.'
 
     # SETTINGS FOR END USERS
     trivia_filename = 'triviaset'               # Specify the filename (default "triviaset")
