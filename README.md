@@ -99,7 +99,7 @@ Some commands are available only during active trivia sessions.
 # Future release requests
 + Tied game functionality
 + Complex question pulling algorithm (potentially based on game/another grouping)
-+ Enable auto-bonus when X turns away from completing a sessions
++ Enable auto-bonus when X turns away from completing a session
 
 # Credits
 Thanks to cormac-obrien’s publicly available instructions to navigate Twitch's IRC API via Python & socket, which was used in various forms within this release (http://www.instructables.com/id/Twitchtv-Moderator-Bot/)
