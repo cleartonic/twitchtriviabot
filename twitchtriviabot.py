@@ -73,7 +73,7 @@ def trivia_start():
         var.trivia_questions = int(var.tsrows)
         print("Warning: Trivia questions for session exceeds trivia set's population. Setting session equal to max questions.")
     numberlist = []
-    for i in range(var.trivia_questions):             # Create a list of all indices
+    for i in range(var.tsrows):             # Create a list of all indices
         numberlist.append(i)
     while qs_buildrows < var.trivia_questions:  
         temprando = random.choice(numberlist)
