@@ -14,7 +14,7 @@ Twitch Trivia Bot (TTB) is a Python script to run a trivia session in Twitch cha
 + Trivia sessions cut short by bot disconnect can be reloaded via actively created backups
 
 # Setup
-The latest Python 3 install is required for this bot, available at https://www.python.org/downloads/
+The latest Python 3 install is required for this bot. You will need to install Python 3 to be able to run. One can either use standard Python 3 distribution with IDLE, or use something like the Anaconda distribution with Spyder (what I use).
 
 Three files are critical for the bot to run. Download “triviaset.csv”, “twitchtriviabot.py”, and “config.txt”, and place them in the same directory. 
 
@@ -50,7 +50,7 @@ After running trivia, a few files will be generated:
 
 # Running the bot
 
-This is a Python 3 script, so you will need to install Python 3 to be able to run. One can either use standard Python 3 distribution with IDLE, or use something like the Anaconda distribution with Spyder (what I use). Either way, once both the triviaset and config.txt are set up, the only thing that needs to happen is loading the python script (‘twitchtriviabot.py’) into a Python console and running the script. The initial connection to Twitch should look something like:
+Once both the triviaset and config.txt are set up, the only thing that needs to happen is loading the python script (‘twitchtriviabot.py’) into a Python console and running the script. The initial connection to Twitch should look something like:
 
 ![img](https://i.imgur.com/Ds1TL8M.png "img")
 
