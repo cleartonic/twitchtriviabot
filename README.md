@@ -20,7 +20,7 @@ Three files are critical for the bot to run. Download “triviaset.csv”, “tw
 
 + “twitchtriviabot.py” does not need to be reconfigured. This will be loaded via Python console, and will connect to Twitch chat.
 A trivia set file (either csv, xls or xlsx) needs to be set up (more on this below). Default with this package is ‘triviaset.csv’ with the appropriate columns pre-identified. 
-+ “config.txt” needs to be configured. Open this file in a text editor.
++ “config.txt” needs to be configured. All inputs should be **without** brackets (defaults have brackets where input is necessary.) Open this file in a text editor.
   + Under “Trivia Settings”, the first two filename & filetype should match the trivia set file (default is ‘triviaset.csv’.) All numberic fields here are default and don’t need to be adjusted, and represent seconds:
     + Trivia_questions = # of questions for the trivia session to include. This will be pulled randomly for the trivia list from csv/xls/xlsx. 
     + Trivia_hinttime_1 and 2 = Time delay before hints 1 and 2 are supplied
