@@ -2,6 +2,9 @@
 
 Twitch Trivia Bot (TTB) is a Python script to run a trivia session in Twitch chat. The bot will load a quiz set, run a session of trivia, assign a winner and save scores dynamically. 
 
+![img](https://drive.google.com/open?id=1VDknCBdB9HXvvY9UhVP8nSr1RKS2rlRK "img")
+
+
 # Features:
 + Loads Excel (xls, xlsx) and csv files for trivia questions, and answers, and handles any amount of questions (limited only by Excel/csv constraints)
 + Dynamically selects a random set of questions from the pool of questions
