@@ -48,7 +48,7 @@ When saving the file:
 
 After running trivia, a few files will be generated:
 + Userscores.txt - User scores will be saved here. Do not touch this, unless a score needs to be manually adjusted. For each user that has guessed a correct answer, an entry will be made, reporting three numbers. [x,y,z], where x = total session points, y = total trivia points (all games), and z = total wins (all games) per participant. 
-+ /backup/ - three backup files will be generated for reloading purposes in case of preemptive bot termination from the server.
++ /backup/ - three backup files will be generated for reloading purposes in case of preemptive bot termination from the server. **IN ORDER FOR THIS TO WORK PROPERLY,** you will need to have a folder called "backup" in the same directory as the "triviabot.py" document.
 
 # Running the bot
 
