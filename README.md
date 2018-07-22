@@ -45,6 +45,7 @@ Fill out row by row each question, filling in topic/game, and at least 1 Answer 
 When saving the file:
 + If saving as a csv, the file format must be formatted as **CSV UTF-8**. 
 + If saving as an xls or xlsx, then **config.txt must be changed to the matching filetype**. (if you have Excel or can export from Google Sheets, this is recommended for ease of use with formatting). 
+The provided triviaset.csv has many blank rows (where there's 4 commas per line) - if this file is used without overwriting, make sure to open the file with a text editor to delete the extra rows once the rest of the questions are populated. Otherwise many blanks/NaN's will appear as questions. 
 
 After running trivia, a few files will be generated:
 + Userscores.txt - User scores will be saved here. Do not touch this, unless a score needs to be manually adjusted. For each user that has guessed a correct answer, an entry will be made, reporting three numbers. [x,y,z], where x = total session points, y = total trivia points (all games), and z = total wins (all games) per participant. 
