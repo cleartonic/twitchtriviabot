@@ -221,15 +221,12 @@ def trivia_answer(username,cleanmessage):
     else:
         msg = str(username)+" answers question #"+str(var.session_questionno+1)+" correctly! The answer is ** "+str(var.qs.iloc[var.session_questionno,2])+" ** for "+str(var.session_answervalue)+" points. "+str(username)+" has "+str(var.userscores[username][0])+" points!"
     sendmessage(msg)
-    print("1...")
     time.sleep((var.trivia_questiondelay))
-    print("2...")
     var.session_questionno += 1
     var.trivia_hintasked = 0
     var.trivia_questionasked = False
     var.trivia_questionasked_time = 0
     trivia_savebackup()
-    print("3...")
     if var.trivia_questions == var.session_questionno:          # End game check
         trivia_end()
     else:
@@ -409,6 +406,8 @@ def calltimer():
     
 def trivia_savebackup():            # backup session saver
     # Save session position/variables 
+    if not os.path.exists('backup/'):
+        os.mkdir('backup/')
     config2 = configparser.ConfigParser()
     config2['DEFAULT'] = {'session_questionno': var.session_questionno, 'session_answervalue': var.session_answervalue, 'session_bonusround': var.session_bonusround}
     with open ('backup/backupsession.txt','w') as c:
