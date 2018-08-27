@@ -14,7 +14,7 @@ import os
 
 # SETTINGS
 class var():   
-    infomessage = 'Twitch Trivia Bot loaded. Version 0.1.2. Developed by cleartonic.'
+    infomessage = 'Twitch Trivia Bot loaded. Version 0.1.3. Developed by cleartonic.'
 
     # SETTINGS FOR END USERS
     trivia_filename = 'triviaset'               # Specify the filename (default "triviaset")
@@ -221,15 +221,19 @@ def trivia_answer(username,cleanmessage):
     else:
         msg = str(username)+" answers question #"+str(var.session_questionno+1)+" correctly! The answer is ** "+str(var.qs.iloc[var.session_questionno,2])+" ** for "+str(var.session_answervalue)+" points. "+str(username)+" has "+str(var.userscores[username][0])+" points!"
     sendmessage(msg)
+    print("1...")
     time.sleep((var.trivia_questiondelay))
+    print("2...")
     var.session_questionno += 1
     var.trivia_hintasked = 0
     var.trivia_questionasked = False
     var.trivia_questionasked_time = 0
     trivia_savebackup()
+    print("3...")
     if var.trivia_questions == var.session_questionno:          # End game check
         trivia_end()
     else:
+        print("Next question called...")
         trivia_callquestion()
     
     
@@ -278,19 +282,20 @@ def trivia_end():
 
 def trivia_routinechecks():                   # after every time loop, routine checking of various vars/procs
     var.TIMER = round(time.time())
+    # print(var.TIMER)
     
     if var.trivia_questions == var.session_questionno:          # End game check
         trivia_end()
     
-    if ((var.TIMER - var.trivia_questionasked_time)>var.trivia_hinttime_2 and var.trivia_active and var.trivia_hintasked == 1):
+    if ((var.TIMER - var.trivia_questionasked_time)>var.trivia_hinttime_2 and var.trivia_active and var.trivia_hintasked == 1 and var.trivia_questionasked):
         var.trivia_hintasked = 2
         trivia_askhint(1) # Ask second hint
         
-    if ((var.TIMER - var.trivia_questionasked_time)>var.trivia_hinttime_1 and var.trivia_active and var.trivia_hintasked == 0):
+    if ((var.TIMER - var.trivia_questionasked_time)>var.trivia_hinttime_1 and var.trivia_active and var.trivia_hintasked == 0 and var.trivia_questionasked):
         var.trivia_hintasked = 1
         trivia_askhint(0) # Ask first hint     
         
-    if ((var.TIMER - var.trivia_questionasked_time)>var.trivia_skiptime and var.trivia_active):
+    if ((var.TIMER - var.trivia_questionasked_time)>var.trivia_skiptime and var.trivia_active and var.trivia_questionasked):
         trivia_skipquestion()
 
     
