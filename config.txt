@@ -7,6 +7,7 @@ trivia_hinttime_2 = 60
 trivia_skiptime = 90
 trivia_questiondelay = 8
 trivia_bonusvalue = 3
+trivia_mode = normal
 
 [Admin Settings]
 admins = [ADD ADMINS]
