@@ -11,15 +11,16 @@ import socket
 import re
 import configparser
 import os
+import math
 
 # SETTINGS
-class var():   
+class var():
     infomessage = 'Twitch Trivia Bot loaded. Version 0.1.3. Developed by cleartonic.'
 
     # SETTINGS FOR END USERS
     trivia_filename = 'triviaset'               # Specify the filename (default "triviaset")
     trivia_filetype = 'csv'                     # Specify the file type. CSV (MUST be UTF-8), XLS, XLSX
-    
+
     trivia_questions = 'INIT'                    # Total questions to be answered for trivia round
     trivia_hinttime_1 = 'INIT'                   # Seconds to 1st hint after question is asked
     trivia_hinttime_2 = 'INIT'                   # Seconds to 2nd hint after question is asked
@@ -28,13 +29,30 @@ class var():
     trivia_bonusvalue = 'INIT'                   # BONUS: How much points are worth in BONUS round
     admins = 'INIT'
 
-    # FUNCTION VARIABLES 
+    # FUNCTION VARIABLES
     if trivia_filetype == 'csv':                # open trivia source based on type
-        ts = pd.read_csv(trivia_filename+"."+trivia_filetype)   
+        ts = pd.read_csv(trivia_filename+"."+trivia_filetype)
     if trivia_filetype == 'xlsx' or trivia_filetype == 'xls':
-        ts = pd.read_excel(trivia_filename+"."+trivia_filetype) # open trivia source based on type        
+        ts = pd.read_excel(trivia_filename+"."+trivia_filetype) # open trivia source based on type
     if trivia_filetype != 'xlsx' and trivia_filetype != 'xls' and trivia_filetype != 'csv':
-        print("Warning! No file loaded. Type !stopbot and try loading again.")
+        print("Warning! No trivia file loaded. Check the trivia file is where it should be and try again.")
+        exit()
+
+    def validate_columns(dataFrame, columns):
+        trivia = dataFrame.to_dict()
+        for column in columns:
+            for key, value in trivia[column].items():
+                if type(value) != str and math.isnan(value):
+                    print('\n\tLuke, we\'ve got a malfunction in fire control...\n')
+                    print(f'It looks like there\'s an empty {column} on line { key + 2 } in the triviaset file')
+                    print('Better go fix that before trying to shoot this thing off')
+                    exit()
+
+    required_columns = ['Question', 'Answer']
+    validate_columns(ts, required_columns)
+
+    #Load triviasets
+
     tsrows = ts.shape[0]                    # Dynamic # of rows based on triviaset
     qs = pd.DataFrame(columns=list(ts))     # Set columns in quizset to same as triviaset
     userscores = {}                         # Dictionary holding user scores, kept in '!' and loaded/created upon trivia. [1,2,3] 1: Session score 2: Total trivia points 3: Total wins
