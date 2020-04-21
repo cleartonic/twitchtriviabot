@@ -65,7 +65,7 @@ class var():
     session_questionno = 0                  # Question # in current session
     session_answervalue = 1                 # How much each question is worth (altered by BONUS only)
     session_bonusround = 0                  # 0 - not bonus, 1 - bonus
-    TIMER = 0                               # Ongoing active timer 
+    TIMER = 0                               # Ongoing active timer
 
 class chatvar():                            # Variables for IRC / Twitch chat function
     HOST = 'INIT'
@@ -74,29 +74,29 @@ class chatvar():                            # Variables for IRC / Twitch chat fu
     PASS = 'INIT'
     CHAN = 'INIT'
     RATE = (120) # messages per second
-    CHAT_MSG=re.compile(r"^:\w+!\w+@\w+\.tmi\.twitch\.tv PRIVMSG #\w+ :")    
-    
-    
+    CHAT_MSG=re.compile(r"^:\w+!\w+@\w+\.tmi\.twitch\.tv PRIVMSG #\w+ :")
+
+
 # CODE
 
 
 ##### Trivia start build. ts = "Trivia set" means original master trivia file. qs = "Quiz set" means what's going to be played with for the session
 def trivia_start():
     sendmessage("Trivia has been initiated. Generating trivia base for session...")
-    qs_buildrows = 0                        # starts at zero, must reach trivia_questions to be complete during while loop        
-           
-    ### Loop through TS and build QS until qs_buildrows = trivia_numbers 
-    
+    qs_buildrows = 0                        # starts at zero, must reach trivia_questions to be complete during while loop
+
+    ### Loop through TS and build QS until qs_buildrows = trivia_numbers
+
     if var.tsrows < var.trivia_questions:
         var.trivia_questions = int(var.tsrows)
         print("Warning: Trivia questions for session exceeds trivia set's population. Setting session equal to max questions.")
     numberlist = []
     for i in range(var.tsrows):             # Create a list of all indices
         numberlist.append(i)
-    while qs_buildrows < var.trivia_questions:  
+    while qs_buildrows < var.trivia_questions:
         temprando = random.choice(numberlist)
         numberlist.remove(temprando)
-        try: 
+        try:
             var.qs = var.qs.append(var.ts.loc[temprando],verify_integrity=True)    # Check for duplicates with last argument, skip if so
             qs_buildrows += 1
         except:                             # pass on duplicates and re-roll
@@ -117,7 +117,7 @@ def loadscores():
     except:
         with open('userscores.txt', "w") as fp:
             print("No score list, creating...")
-            var.userscores = {'trivia_dummy':[0,0,0]}   
+            var.userscores = {'trivia_dummy':[0,0,0]}
             json.dump(var.userscores , fp)
 
 def loadconfig():
@@ -131,7 +131,7 @@ def loadconfig():
     var.trivia_skiptime = int(config['Trivia Settings']['trivia_skiptime'])
     var.trivia_questiondelay = int(config['Trivia Settings']['trivia_questiondelay'])
     var.trivia_bonusvalue = int(config['Trivia Settings']['trivia_bonusvalue'])
-    
+
     admin1 = config['Admin Settings']['admins']
     var.admins = admin1.split(',')
 
@@ -139,7 +139,7 @@ def loadconfig():
     chatvar.PORT = int(config['Bot Settings']['PORT'])
     chatvar.NICK = config['Bot Settings']['NICK']
     chatvar.PASS = config['Bot Settings']['PASS']
-    chatvar.CHAN = config['Bot Settings']['CHAN']    
+    chatvar.CHAN = config['Bot Settings']['CHAN']
 
 def dumpscores():
     try:
@@ -148,12 +148,12 @@ def dumpscores():
     except:
         print("Scores NOT saved!")
         pass
-    
-### Trivia command switcher 
+
+### Trivia command switcher
 def trivia_commandswitch(cleanmessage,username):
-    
+
     # ADMIN ONLY COMMANDS
-    if username in var.admins:    
+    if username in var.admins:
         if cleanmessage == "!triviastart":
             if var.trivia_active:
                 print("Trivia already active.")
@@ -165,7 +165,7 @@ def trivia_commandswitch(cleanmessage,username):
         if cleanmessage == "!stop":
                 stopbot()
         if cleanmessage == "!loadconfig":
-                loadconfig()                
+                loadconfig()
                 sendmessage("Config reloaded.")
         if cleanmessage == "!backuptrivia":
                 trivia_savebackup()
@@ -173,9 +173,9 @@ def trivia_commandswitch(cleanmessage,username):
         if cleanmessage == "!loadtrivia":
                 trivia_loadbackup()
         if cleanmessage == "!next":
-                trivia_skipquestion()                      
+                trivia_skipquestion()
 
-    # ACTIVE TRIVIA COMMANDS            
+    # ACTIVE TRIVIA COMMANDS
     if var.trivia_active:
         if cleanmessage == "!top3":
                 topscore = trivia_top3score()
@@ -193,14 +193,14 @@ def trivia_commandswitch(cleanmessage,username):
                         sendmessage(msg)
                 except:
                     msg = "No scores yet."
-                    sendmessage(msg)     
+                    sendmessage(msg)
         if cleanmessage == "!hint":
             if var.trivia_hintasked == 0:
                 trivia_askhint(0)
             if var.trivia_hintasked == 1:
                 trivia_askhint(0)
             if var.trivia_hintasked == 2:
-                trivia_askhint(1)                   
+                trivia_askhint(1)
 
         if cleanmessage == "!bonus":
                 if var.session_bonusround == 0:
@@ -209,16 +209,16 @@ def trivia_commandswitch(cleanmessage,username):
                 if var.session_bonusround == 1:
                     trivia_endbonus()
                     var.session_bonusround = 0
-                    
-    # GLOBAL COMMANDS                     
-    if cleanmessage == "!score":
-        trivia_userscore(username) 
 
-           
+    # GLOBAL COMMANDS
+    if cleanmessage == "!score":
+        trivia_userscore(username)
+
+
 ### Call trivia question
 def trivia_callquestion():
     var.trivia_questionasked = True
-    var.trivia_questionasked_time = round(time.time()) 
+    var.trivia_questionasked_time = round(time.time())
 
     msg = "Question "+str(var.session_questionno+1)+": ["+var.qs.iloc[var.session_questionno,0]+"] "+var.qs.iloc[var.session_questionno,1]
 
@@ -231,8 +231,8 @@ def trivia_answer(username,cleanmessage):
         var.userscores[username][0] += var.session_answervalue
         var.userscores[username][1] += var.session_answervalue
     except:
-        print("Failed to find user! Adding new")  
-        var.userscores[username] = [var.session_answervalue,var.session_answervalue,0]  # sets up new user 
+        print("Failed to find user! Adding new")
+        var.userscores[username] = [var.session_answervalue,var.session_answervalue,0]  # sets up new user
     dumpscores() # Save all current scores
     if var.session_answervalue == 1:
         msg = str(username)+" answers question #"+str(var.session_questionno+1)+" correctly! The answer is ** "+str(var.qs.iloc[var.session_questionno,2])+" ** for "+str(var.session_answervalue)+" point. "+str(username)+" has "+str(var.userscores[username][0])+" points!"
@@ -250,12 +250,12 @@ def trivia_answer(username,cleanmessage):
     else:
         print("Next question called...")
         trivia_callquestion()
-    
-    
-    
-### Finishes trivia by getting top 3 list, then adjusting final message based on how many participants. Then dumpscore()  
-def trivia_end():        
-   
+
+
+
+### Finishes trivia by getting top 3 list, then adjusting final message based on how many participants. Then dumpscore()
+def trivia_end():
+
     topscore = trivia_top3score()            # Argument "1" will return the first in the list (0th position) for list of top 3
     trivia_clearscores()
     if (len(topscore) == 0):
@@ -280,15 +280,15 @@ def trivia_end():
     dumpscores()
     time.sleep(3)
     msg2 = "Thanks for playing! See you next time!"
-    sendmessage(msg2)    
-    
+    sendmessage(msg2)
+
     var.session_questionno = 0                # reset variables for trivia
     var.trivia_active = False
     var.trivia_hintasked = 0
     var.trivia_questionasked = False
     var.trivia_questionasked_time = 0
     var.qs = pd.DataFrame(columns=list(var.ts))
-    
+
     # Clear backup files upon finishing trivia
     os.remove('backup/backupquizset.csv', dir_fd=None)
     os.remove('backup/backupscores.txt', dir_fd=None)
@@ -298,23 +298,23 @@ def trivia_end():
 def trivia_routinechecks():                   # after every time loop, routine checking of various vars/procs
     var.TIMER = round(time.time())
     # print(var.TIMER)
-    
+
     if var.trivia_questions == var.session_questionno:          # End game check
         trivia_end()
-    
+
     if ((var.TIMER - var.trivia_questionasked_time)>var.trivia_hinttime_2 and var.trivia_active and var.trivia_hintasked == 1 and var.trivia_questionasked):
         var.trivia_hintasked = 2
         trivia_askhint(1) # Ask second hint
-        
+
     if ((var.TIMER - var.trivia_questionasked_time)>var.trivia_hinttime_1 and var.trivia_active and var.trivia_hintasked == 0 and var.trivia_questionasked):
         var.trivia_hintasked = 1
-        trivia_askhint(0) # Ask first hint     
-        
+        trivia_askhint(0) # Ask first hint
+
     if ((var.TIMER - var.trivia_questionasked_time)>var.trivia_skiptime and var.trivia_active and var.trivia_questionasked):
         trivia_skipquestion()
 
-    
-    
+
+
 def trivia_askhint(hinttype=0):                 # hinttype: 0 = 1st hint, 1 = 2nd hint
     if hinttype == 0:                           # type 0, replace 2 out of 3 chars with _
         prehint = str(var.qs.iloc[var.session_questionno,2])
@@ -329,14 +329,14 @@ def trivia_askhint(hinttype=0):                 # hinttype: 0 = 1st hint, 1 = 2n
             counter += 1
         for i in range(len(listo)):
             hint += hint.join(listo[i])
-        sendmessage("Hint #1: "+hint)     
+        sendmessage("Hint #1: "+hint)
 
     if hinttype == 1:                           # type 1, replace vowels with _
         prehint = str(var.qs.iloc[var.session_questionno,2])
         hint = re.sub('[aeiou]','_',prehint,flags=re.I)
         sendmessage("Hint #2: "+hint)
-                    
-    
+
+
 def trivia_skipquestion():
     if var.trivia_active:
         var.session_questionno += 1
@@ -351,23 +351,23 @@ def trivia_skipquestion():
         if var.trivia_questions == var.session_questionno:          # End game check
             trivia_end()
         else:
-            trivia_callquestion()        
+            trivia_callquestion()
 
-    
-### B O N U S    
+
+### B O N U S
 def trivia_startbonus():
     msg = "B O N U S Round begins! Questions are now worth "+str(var.trivia_bonusvalue)+" points!"
     sendmessage(msg)
     var.session_answervalue = var.trivia_bonusvalue
-    
+
 def trivia_endbonus():
     msg = "Bonus round is over! Questions are now worth 1 point."
     sendmessage(msg)
     var.session_answervalue = 1
 
-    
 
-### Top 3 trivia 
+
+### Top 3 trivia
 def trivia_top3score():
     data2 = {}                                  # temp dictionary just for keys & sessionscore
     for i in var.userscores.keys():
@@ -380,22 +380,22 @@ def trivia_top3score():
     for k, v in data3.most_common(3):
         top3 += [[k,v]]
     return top3
-    
+
 ### clears scores and assigns a win to winner
-def trivia_clearscores():           
+def trivia_clearscores():
     for i in var.userscores.keys():
         var.userscores[i][0] = 0
-        
-### Add +1 to winner's win in userscores
-def trivia_assignwinner(winner):    
-    var.userscores[winner][2] += 1
-       
 
-### temp function to give 100 score to each 
+### Add +1 to winner's win in userscores
+def trivia_assignwinner(winner):
+    var.userscores[winner][2] += 1
+
+
+### temp function to give 100 score to each
 def trivia_givescores():
     for i in var.userscores.keys():
         var.userscores[i][0] = random.randrange(0,1000)
-        
+
 def trivia_userscore(username):
     try:
         msg = str(username)+" has "+str(var.userscores[username][0])+" points for this trivia session, "+str(var.userscores[username][1])+" total points and "+str(var.userscores[username][2])+" total wins."
@@ -403,7 +403,7 @@ def trivia_userscore(username):
     except:
         msg = str(username)+" not found in database."
         sendmessage(msg)
-        
+
 ### Chat message sender func
 def sendmessage(msg):
     answermsg = ":"+chatvar.NICK+"!"+chatvar.NICK+"@"+chatvar.NICK+".tmi.twitch.tv PRIVMSG "+chatvar.CHAN+" : "+msg+"\r\n"
@@ -421,17 +421,17 @@ def calltimer():
 
 
 ### BACKUP SAVING/LOADING
-    
+
 def trivia_savebackup():            # backup session saver
-    # Save session position/variables 
+    # Save session position/variables
     if not os.path.exists('backup/'):
         os.mkdir('backup/')
     config2 = configparser.ConfigParser()
     config2['DEFAULT'] = {'session_questionno': var.session_questionno, 'session_answervalue': var.session_answervalue, 'session_bonusround': var.session_bonusround}
     with open ('backup/backupsession.txt','w') as c:
-        config2.write(c)    
-        
-    # Save CSV of quizset 
+        config2.write(c)
+
+    # Save CSV of quizset
     var.qs.to_csv('backup/backupquizset.csv',index=False,encoding='utf-8')
     # Save session scores
     try:
@@ -440,25 +440,25 @@ def trivia_savebackup():            # backup session saver
     except:
         print("Scores NOT saved!")
         pass
-        
+
 
 def trivia_loadbackup():            # backup session loader
     if var.trivia_active:
         sendmessage("Trivia is already active. Prior session was not reloaded.")
     else:
-        # Load session position/variables 
+        # Load session position/variables
         config2 = configparser.ConfigParser()
         config2.read('backup/backupsession.txt')
-    
+
         var.session_questionno = int(config2['DEFAULT']['session_questionno'])
         var.session_answervalue = int(config2['DEFAULT']['session_answervalue'])
         var.session_bonusround = int(config2['DEFAULT']['session_bonusround'])
-    
-        # Load quizset 
+
+        # Load quizset
         var.qs = pd.read_csv('backup/backupquizset.csv',encoding='utf-8')
-    
+
         # Load session scores
-    
+
         try:
             with open('backup/backupscores.txt', 'r') as fp:
                 print("Score list loaded.")
@@ -466,9 +466,9 @@ def trivia_loadbackup():            # backup session loader
         except:
             with open('backup/backupscores.txt', "w") as fp:
                 print("No score list, creating...")
-                var.userscores = {'trivia_dummy':[0,0,0]}   
+                var.userscores = {'trivia_dummy':[0,0,0]}
                 json.dump(var.userscores , fp)
-    
+
         print("Loaded backup.")
         var.trivia_active = True
         sendmessage("Trivia sessions reloaded. Trivia will begin again in "+str(var.trivia_questiondelay)+" seconds.")
@@ -483,7 +483,7 @@ def trivia_loadbackup():            # backup session loader
 
 
 ## STARTING PROCEDURES
-        
+
 print("Bot loaded. Loading config and scores...")
 try:
     loadconfig()
@@ -498,11 +498,11 @@ try:
 except:
     print("Scores not loaded! Check or delete 'userscores.txt' file and reboot bot")
     var.SWITCH = False
-    
 
 
 
-          
+
+
 if var.SWITCH:
     try:
         s = socket.socket()
@@ -524,7 +524,7 @@ def scanloop():
             s.send("PONG :tmi.twitch.tv\r\n".encode("utf-8"))
             print("Pong sent")
         else:
-            username = re.search(r"\w+", response).group(0) 
+            username = re.search(r"\w+", response).group(0)
             if username == chatvar.NICK:  # Ignore this bot's messages
                 pass
             else:
@@ -535,16 +535,16 @@ def scanloop():
                     print("Command recognized.")
                     trivia_commandswitch(cleanmessage,username)
                     time.sleep(1)
-                try:                
+                try:
 #                   if re.match(var.qs.iloc[var.session_questionno,2], message, re.IGNORECASE):   # old matching
-                    
-                    
+
+
                     if bool(re.match("\\b"+var.qs.iloc[var.session_questionno,2]+"\\b",message,re.IGNORECASE)):   # strict new matching
                         print("Answer recognized.")
                         trivia_answer(username, cleanmessage)
                     if bool(re.match("\\b"+var.qs.iloc[var.session_questionno,3]+"\\b",message,re.IGNORECASE)):   # strict new matching
                         print("Answer recognized.")
-                        trivia_answer(username, cleanmessage)                        
+                        trivia_answer(username, cleanmessage)
                 except:
                     pass
     except:
@@ -552,16 +552,16 @@ def scanloop():
 
 
 # Infinite loop while bot is active to scan messages & perform routines
-        
+
 while var.SWITCH:
     if var.trivia_active:
         trivia_routinechecks()
     scanloop()
-    time.sleep(1 / chatvar.RATE)    
+    time.sleep(1 / chatvar.RATE)
 
 
 
-        
+
 
 # 0: Index
 # 0: Game
