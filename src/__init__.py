@@ -1,3 +1,2 @@
-from .connection_vars import Connection
-from .game_vars import Game
+from .bot import Trivvy
 from .scanner import scanloop
