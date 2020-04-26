@@ -51,8 +51,6 @@ class var():
     required_columns = ['Question', 'Answer']
     validate_columns(ts, required_columns)
 
-    #Load triviasets
-
     tsrows = ts.shape[0]                    # Dynamic # of rows based on triviaset
     qs = pd.DataFrame(columns=list(ts))     # Set columns in quizset to same as triviaset
     userscores = {}                         # Dictionary holding user scores, kept in '!' and loaded/created upon trivia. [1,2,3] 1: Session score 2: Total trivia points 3: Total wins
@@ -83,22 +81,14 @@ class chatvar():                            # Variables for IRC / Twitch chat fu
 ##### Trivia start build. ts = "Trivia set" means original master trivia file. qs = "Quiz set" means what's going to be played with for the session
 def trivia_start():
     sendmessage("Trivia has been initiated. Generating trivia base for session...")
-    qs_buildrows = 0                        # starts at zero, must reach trivia_questions to be complete during while loop
-
-    ### Loop through TS and build QS until qs_buildrows = trivia_numbers
 
     if var.tsrows < var.trivia_questions:
         var.trivia_questions = int(var.tsrows)
         print("Warning: Trivia questions for session exceeds trivia set's population. Setting session equal to max questions.")
     numberlist = []
     for i in range(var.tsrows):             # Create a list of all indices
-        numberlist.append(i)
-    while qs_buildrows < var.trivia_questions:
-        temprando = random.choice(numberlist)
-        numberlist.remove(temprando)
         try:
-            var.qs = var.qs.append(var.ts.loc[temprando],verify_integrity=True)    # Check for duplicates with last argument, skip if so
-            qs_buildrows += 1
+            var.qs = var.qs.append(var.ts.loc[i],verify_integrity=True)    # Check for duplicates with last argument, skip if so
         except:                             # pass on duplicates and re-roll
             print("Duplicate index. This should not happen, dropping row from table. Please check config.txt's trivia_questions are <= total # of questions in trivia set.")
             var.ts.drop(var.ts.index[[temprando]])
