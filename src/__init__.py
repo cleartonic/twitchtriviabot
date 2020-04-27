@@ -1,2 +1,2 @@
 from .bot import Trivvy
-from .scanner import scanloop
+from .connection import Connection

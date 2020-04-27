@@ -1,5 +1,8 @@
 from src.bot import Trivvy
-from src.scanner import scanloop
+from src.connection import Connection
+from test import socket
+# import socket
 
-app = Trivvy(scanloop)
+twitch_connection = Connection(socket)
+app = Trivvy(twitch_connection)
 app.run()
