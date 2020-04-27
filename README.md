@@ -68,6 +68,7 @@ This assumes no development or shell experience. Use your own way if you have op
   - Note: `chan` needs a `#` in front of the name as shown.
   - Also Note: you need to be logged in to twitch under the bot's name to get a pass.
   - Also Also Note: You can [get that pass (oauth token) from here](https://twitchapps.com/tmi/).
+  - Also Also Also Note: usernames must be typed into the config in all lower case
   - Finally Note: oauth passes expire. You'll need a new one from time to time.
 
  1. `python twitchtriviabot.py`
