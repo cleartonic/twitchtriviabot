@@ -49,11 +49,11 @@ class Connection():
     def scan(self):
         try:
             response = self.socket.recv(1024).decode("utf-8")
-            self.to_respond(response)
+            self.pong_if_ping(response)
         except:
             pass
 
-    def to_respond(self, response):
+    def pong_if_ping(self, response):
         if response == "PING :tmi.twitch.tv\r\n":
             self.socket.send("PONG :tmi.twitch.tv\r\n".encode("utf-8"))
             print("Pong sent")
