@@ -1,6 +1,5 @@
 import re
 import time
-import configparser
 from .message_config import Chat
 
 class Connection():
