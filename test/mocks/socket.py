@@ -25,8 +25,7 @@ class fake_reception:
         def decode(fake_reception, encoding):
             print(f'Fake reception tried to decode itself: {encoding}')
 
-            fake_server_message = 'This is your Fake Server Speaking: Be excellent to each other.'
+            fake_server_message = ':FakeServer!FakeServer@FakeServer.tmi.twitch.tv PRIVMSG :This is your Fake Server Speaking: Be excellent to each other.\r\n'
             special_ping_message = 'PING :tmi.twitch.tv\r\n'
             message = random.choice([fake_server_message, special_ping_message])
-            print(message)
             return message
