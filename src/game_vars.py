@@ -1,7 +1,6 @@
 class Game:
     trivia_active = False
-
-    infomessage = 'Refactored out of a cleartonic fork by @LtJG_Bodhi_Cooper: Trivvy Bot V-0.1.4 has been called into existence.'
+    COMMANDLIST = ["!triviastart","!triviaend","!top3","!hint","!bonus","!score","!next","!stop","!loadconfig","!backuptrivia","!loadtrivia","!creator"]
 
     userscores = {}                         # Dictionary holding user scores, kept in '!' and loaded/created upon trivia. [1,2,3] 1: Session score 2: Total trivia points 3: Total wins
     trivia_questionasked = False            # Switch for when a question is actively being asked

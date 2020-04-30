@@ -1,3 +1,4 @@
+from .messages import Log as report
 import configparser
 
 class Configuration:
@@ -6,8 +7,9 @@ class Configuration:
     def abruptly_end_the_app():
         exit()
 
-    def __init__(self, config_file):
-        print("Loading config...")
+    def __init__(self, config_file, log):
+        self.log = log
+        self.log(report.config_loading)
         try:
             config = configparser.ConfigParser()
             config.read(config_file)
@@ -28,14 +30,18 @@ class Configuration:
             self.NICK = config['Bot Settings']['NICK']
             self.PASS = config['Bot Settings']['PASS']
             self.CHAN = config['Bot Settings']['CHAN']
+            self.log(report.config_success)
         except:
-            print("Config not loaded! Check config file and reboot bot")
+            self.log(report.config_failure)
             Configuration.abruptly_end_the_app()
 
     def set_admins(config):
         separator = ','
         admin_list = config['Admin Settings']['admins'].split(separator)
         return [admin.strip() for admin in admin_list]
+
+    def get_admins(self):
+        return self.admins
 
     def get_connection_constants(self):
         return {
