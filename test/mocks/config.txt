@@ -1,0 +1,19 @@
+[Trivia Settings]
+trivia_filename = triviaset
+trivia_filetype = csv
+trivia_questions = 4
+trivia_hinttime_1 = 30
+trivia_hinttime_2 = 60
+trivia_skiptime = 90
+trivia_questiondelay = 8
+trivia_bonusvalue = 3
+
+[Admin Settings]
+admins = trivvy_bot_commander,trivvy_bot_leutenant
+
+[Bot Settings]
+host = irc.twitch.tv
+port = 6667
+nick = trivvy_bot
+pass = oauth:1awesomerandompassofthislength
+chan = #trivvy_channel
