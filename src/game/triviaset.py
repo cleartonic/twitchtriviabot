@@ -2,7 +2,7 @@ import pandas
 import math
 
 class Trivia_Set:
-    required_columns = ['Round', 'Question', 'Answer']
+    required_columns = ['Round', 'Ask', 'Answer']
 
     def __init__(self, csv_file):
         dataFrame = pandas.read_csv(csv_file)

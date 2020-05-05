@@ -5,7 +5,7 @@ class QuestionTestCase(unittest.TestCase):
     def test_trivium_knows_itself(self):
         question = {
             'Round': 1,
-            'Question': "What's a Diorama?",
+            'Ask': "What's a Diorama?",
             'Answer': "OMG Han! Chewie! They're all here!"
         }
         s = Subject(question)
@@ -15,7 +15,7 @@ class QuestionTestCase(unittest.TestCase):
     def test_trivium_accepts_arbitrary_values_since_its_validated_elsewhere(self):
         question = {
             'Round': "Awesome",
-            'Question': 24601,
+            'Ask': 24601,
             'Answer': False
         }
         s = Subject(question)
@@ -25,7 +25,7 @@ class QuestionTestCase(unittest.TestCase):
     def test_trivium_doesnt_care_if_there_are_extra_fields(self):
         question = {
             'Round': 1,
-            'Question': "What's a Diorama?",
+            'Ask': "What's a Diorama?",
             'Answer': "OMG Han! Chewie! They're all here!",
             'Answer2': 'D\'oh!'
         }
