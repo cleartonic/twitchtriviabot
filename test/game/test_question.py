@@ -9,7 +9,6 @@ class QuestionTestCase(unittest.TestCase):
             'Answer': "OMG Han! Chewie! They're all here!"
         }
         s = Subject(question)
-        self.assertEqual(s.round, 1)
         self.assertEqual(s.ask, "What's a Diorama?")
         self.assertEqual(s.answer, "OMG Han! Chewie! They're all here!")
 
@@ -20,7 +19,6 @@ class QuestionTestCase(unittest.TestCase):
             'Answer': False
         }
         s = Subject(question)
-        self.assertEqual(s.round, "Awesome")
         self.assertEqual(s.ask, 24601)
         self.assertEqual(s.answer, False)
 
