@@ -39,5 +39,3 @@ class Trivia_Set:
 
     def get_questions(self):
         return self.questions
-
-print(Trivia_Set("triviaset.csv").get_questions())
