@@ -4,7 +4,6 @@ from src.game.questioner import Questioner as Subject
 class QuestionerTestCase(unittest.TestCase):
     def test_questioner_knows_itself(self):
         question = {
-            'Round': 1,
             'Ask': "What's a Diorama?",
             'Answer': "OMG Han! Chewie! They're all here!"
         }
@@ -14,7 +13,6 @@ class QuestionerTestCase(unittest.TestCase):
 
     def test_questioner_accepts_arbitrary_values_since_its_validated_elsewhere(self):
         question = {
-            'Round': "Awesome",
             'Ask': 24601,
             'Answer': False
         }
