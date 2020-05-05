@@ -1,5 +1,5 @@
 from src.connection import Connection
-from src.game_vars import Game
+from src.game import Game
 import time
 
 class Trivvy:

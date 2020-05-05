@@ -21,7 +21,7 @@ class fake_reception:
 
         def decode(fake_reception, encoding):
             log = fake_reception.dont_print
-            config = Configuration('test/mocks/config.txt', log)
+            config = Configuration('mocks/config.txt', log)
             conn = config.get_connection_constants()
             chan = conn['channel'][1:]
             bot = conn['bot_name']
