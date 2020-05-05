@@ -1,3 +1,3 @@
 from .game import *
-from .trivium import Trivium
+from .questioner import Questioner
 from .round import *

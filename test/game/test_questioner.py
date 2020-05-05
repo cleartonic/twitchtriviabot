@@ -1,7 +1,7 @@
 import unittest
-from src.game.trivium import Trivium as Subject
+from src.game.questioner import Questioner as Subject
 
-class QuestionTestCase(unittest.TestCase):
+class QuestionerTestCase(unittest.TestCase):
     def test_trivium_knows_itself(self):
         question = {
             'Round': 1,

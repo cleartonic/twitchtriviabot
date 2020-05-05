@@ -1,4 +1,4 @@
-class Trivium:
+class Questioner:
     def __init__(self, question):
         self.ask = question['Ask']
         self.answer = question['Answer']
