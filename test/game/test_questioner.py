@@ -55,3 +55,12 @@ class QuestionerTestCase(unittest.TestCase):
         participant_answer = "I don't know, some kind of goblin-man."
         subject = Subject(question).check_answer(participant_answer)
         self.assertEqual(subject, False)
+
+    def test_questioner_identifies_a_correct_answer_with_extra_whitespace(self):
+        question = {
+            'Ask': "What's a Diorama?",
+            'Answer': "OMG Han! Chewie! They're all here!"
+        }
+        participant_answer = "  OMG Han! Chewie! They're all here!  "
+        subject = Subject(question).check_answer(participant_answer)
+        self.assertEqual(subject, True)
