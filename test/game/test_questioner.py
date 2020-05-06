@@ -20,6 +20,7 @@ class QuestionerTestCase(unittest.TestCase):
         self.assertEqual(s.ask, 24601)
         self.assertEqual(s.answer, False)
 
+
     def test_questioner_doesnt_care_if_there_are_extra_fields(self):
         question = {
             'Round': 1,
@@ -28,3 +29,11 @@ class QuestionerTestCase(unittest.TestCase):
             'Answer2': 'D\'oh!'
         }
         Subject(question)
+
+    def test_questioner_gives_its_ask(self):
+        question = {
+            'Ask': "What's a Diorama?",
+            'Answer': "OMG Han! Chewie! They're all here!"
+        }
+        subject = Subject(question).ask_text()
+        self.assertEqual(subject, "What's a Diorama?")
