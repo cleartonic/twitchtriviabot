@@ -1,6 +1,8 @@
 class Questioner:
     def clean(answer):
-        return "".join(answer.split()).lower()
+        lower_case = answer.lower()
+        letters_only = (x for x in lower_case if x.isalpha())
+        return "".join(letters_only)
 
     def __init__(self, question):
         self.ask = question['Ask']

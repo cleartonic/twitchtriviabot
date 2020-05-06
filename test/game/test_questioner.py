@@ -83,3 +83,12 @@ class QuestionerTestCase(unittest.TestCase):
         participant_answer = "I would say OMG Han! Chewie! They're all here! what do you think?"
         subject = Subject(question).check_answer(participant_answer)
         self.assertEqual(subject, True)
+
+    def test_questioner_identifies_an_exact_correct_answer(self):
+        question = {
+            'Ask': "What's a Diorama?",
+            'Answer': "OMG Han! Chewie! They're all here!"
+        }
+        participant_answer = "O!M@G#H$a%n^?&C*(h)e_w-i+e=!{T}[h]e|y'r\\e:a;l\"l'<h>e,r.e/"
+        subject = Subject(question).check_answer(participant_answer)
+        self.assertEqual(subject, True)
