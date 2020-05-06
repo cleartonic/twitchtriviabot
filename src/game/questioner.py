@@ -11,4 +11,4 @@ class Questioner:
 
     def check_answer(self, participant_answer):
         answer = Questioner.clean(participant_answer)
-        return answer == self.answer
+        return self.answer in answer
