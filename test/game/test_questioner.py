@@ -61,6 +61,6 @@ class QuestionerTestCase(unittest.TestCase):
             'Ask': "What's a Diorama?",
             'Answer': "OMG Han! Chewie! They're all here!"
         }
-        participant_answer = "  OMG Han! Chewie! They're all here!  "
+        participant_answer = " \t \rOMG Han! Chewie! They're all here!\r \n "
         subject = Subject(question).check_answer(participant_answer)
         self.assertEqual(subject, True)
