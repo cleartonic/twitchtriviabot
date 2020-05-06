@@ -1,7 +1,7 @@
 class Questioner:
     def clean(answer):
         lower_case = answer.lower()
-        letters_only = (x for x in lower_case if x.isalpha())
+        letters_only = filter(str.isalpha, lower_case)
         return "".join(letters_only)
 
     def __init__(self, question):
