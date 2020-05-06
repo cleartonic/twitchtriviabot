@@ -2,23 +2,16 @@ import unittest
 from src.game.questioner import Questioner as Subject
 
 class QuestionerTestCase(unittest.TestCase):
-    def test_questioner_knows_itself(self):
+    def test_questioner_knows_itself_and_expects_strings_as_input(self):
         question = {
             'Ask': "What's a Diorama?",
             'Answer': "OMG Han! Chewie! They're all here!"
         }
         s = Subject(question)
         self.assertEqual(s.ask, "What's a Diorama?")
-        self.assertEqual(s.answer, "OMG Han! Chewie! They're all here!")
-
-    def test_questioner_accepts_arbitrary_values_since_its_validated_elsewhere(self):
-        question = {
-            'Ask': 24601,
-            'Answer': False
-        }
-        s = Subject(question)
-        self.assertEqual(s.ask, 24601)
-        self.assertEqual(s.answer, False)
+        self.assertEqual(type(s.ask), str)
+        self.assertEqual(s.answer, "OMGHan!Chewie!They'reallhere!")
+        self.assertEqual(type(s.ask), str)
 
 
     def test_questioner_doesnt_care_if_there_are_extra_fields(self):
@@ -62,5 +55,14 @@ class QuestionerTestCase(unittest.TestCase):
             'Answer': "OMG Han! Chewie! They're all here!"
         }
         participant_answer = " \t \rOMG Han! Chewie! They're all here!\r \n "
+        subject = Subject(question).check_answer(participant_answer)
+        self.assertEqual(subject, True)
+
+    def test_questioner_identifies_a_correct_answer_ignoring_internal_whitespace(self):
+        question = {
+            'Ask': "What's a Diorama?",
+            'Answer': "OMG Han! Chewie! They're all here!"
+        }
+        participant_answer = " \t \rOMGHan!   Chewie! \t They're all here!\r \n "
         subject = Subject(question).check_answer(participant_answer)
         self.assertEqual(subject, True)
