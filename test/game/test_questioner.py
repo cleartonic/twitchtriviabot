@@ -37,3 +37,21 @@ class QuestionerTestCase(unittest.TestCase):
         }
         subject = Subject(question).ask_text()
         self.assertEqual(subject, "What's a Diorama?")
+
+    def test_questioner_identifies_an_exact_correct_answer(self):
+        question = {
+            'Ask': "What's a Diorama?",
+            'Answer': "OMG Han! Chewie! They're all here!"
+        }
+        participant_answer = "OMG Han! Chewie! They're all here!"
+        subject = Subject(question).check_answer(participant_answer)
+        self.assertEqual(subject, True)
+
+    def test_questioner_identifies_an_incorrect_answer(self):
+        question = {
+            'Ask': "What's a Diorama?",
+            'Answer': "OMG Han! Chewie! They're all here!"
+        }
+        participant_answer = "I don't know, some kind of goblin-man."
+        subject = Subject(question).check_answer(participant_answer)
+        self.assertEqual(subject, False)
