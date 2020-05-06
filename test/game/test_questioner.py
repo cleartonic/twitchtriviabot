@@ -10,7 +10,6 @@ class QuestionerTestCase(unittest.TestCase):
         s = Subject(question)
         self.assertEqual(s.ask, "What's a Diorama?")
         self.assertEqual(type(s.ask), str)
-        self.assertEqual(s.answer, "OMGHan!Chewie!They'reallhere!")
         self.assertEqual(type(s.ask), str)
 
 
@@ -64,5 +63,14 @@ class QuestionerTestCase(unittest.TestCase):
             'Answer': "OMG Han! Chewie! They're all here!"
         }
         participant_answer = " \t \rOMGHan!   Chewie! \t They're all here!\r \n "
+        subject = Subject(question).check_answer(participant_answer)
+        self.assertEqual(subject, True)
+
+    def test_questioner_identifies_a_correct_answer_ignoring_case(self):
+        question = {
+            'Ask': "What's a Diorama?",
+            'Answer': "OMG Han! Chewie! They're all here!"
+        }
+        participant_answer = "OmG hAn! CheWIe! theY're all hEre!"
         subject = Subject(question).check_answer(participant_answer)
         self.assertEqual(subject, True)

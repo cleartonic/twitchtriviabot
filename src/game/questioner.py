@@ -1,6 +1,6 @@
 class Questioner:
     def clean(answer):
-        return "".join(answer.split())
+        return "".join(answer.split()).lower()
 
     def __init__(self, question):
         self.ask = question['Ask']
@@ -10,5 +10,5 @@ class Questioner:
         return self.ask
 
     def check_answer(self, participant_answer):
-        answer = "".join(participant_answer.split())
+        answer = Questioner.clean(participant_answer)
         return answer == self.answer
