@@ -92,3 +92,20 @@ class QuestionerTestCase(unittest.TestCase):
         participant_answer = "O!M@G#H$a%n^?&C*(h)e_w-i+e=!{T}[h]e|y'r\\e:a;l\"l'<h>e,r.e/"
         subject = Subject(question).check_answer(participant_answer)
         self.assertEqual(subject, True)
+
+    def test_questioner_first_hint_returns_2_out_of_3_chars_in_answer(self):
+        question = {
+            'Ask': "What's a Diorama?",
+            'Answer': "OMG Han! Chewie! They're all here!"
+        }
+
+        subject = Subject(question).first_hint()
+        self.assertEqual(subject, "O__ __n__C__w__!__h__'__ __l__e__!")
+
+    def test_questioner_second_hint_returns_no_vowels_in_answer(self):
+        question = {
+            'Ask': "What's a Diorama?",
+            'Answer': "OMG Han! Chewie! They're all here!"
+        }
+        subject = Subject(question).second_hint()
+        self.assertEqual(subject, "_MG H_n! Ch_w__! Th_y'r_ _ll h_r_!")
