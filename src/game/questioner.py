@@ -12,9 +12,6 @@ class Questioner:
         self.ask = question['Ask']
         self.answer = question['Answer']
 
-    def ask_text(self):
-        return self.ask
-
     def check_answer(self, participant_answer):
         participant_answer = Questioner.clean(participant_answer)
         correct_answer = Questioner.clean(self.answer)
