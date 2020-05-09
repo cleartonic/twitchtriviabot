@@ -1,2 +1,3 @@
 class Round():
-    pass
+    def __init__(self, questioner, questions):
+        pass
