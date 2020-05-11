@@ -19,7 +19,7 @@ class Questioner:
         self.end()
 
     def start(self):
-        self.connection.sendmessage(self.ask)
+        self.connection.send(self.ask)
 
     def run(self):
         pass

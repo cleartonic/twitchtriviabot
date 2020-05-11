@@ -20,7 +20,7 @@ class Connection():
         self.irc_header = re.compile(Connection.irc_header_pattern)
         self.make_initial_twitch_connection()
 
-    def sendmessage(self, message):
+    def send(self, message):
         irc_id = f':{self.name}!{self.name}@{self.name}.tmi.twitch.tv'
         answer = f'{irc_id} PRIVMSG #{self.chan} :{message}\r\n'
         encoded_answer = answer.encode("utf-8")
@@ -88,4 +88,4 @@ class Connection():
 
     def send_hello(self):
         self.log(report.connect_hi)
-        self.sendmessage(Chat.good_morning)
+        self.send(Chat.good_morning)
