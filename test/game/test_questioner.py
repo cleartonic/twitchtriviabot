@@ -108,3 +108,11 @@ class QuestionerTestCase(unittest.TestCase):
         }
         subject = Subject(question).second_hint()
         self.assertEqual(subject, "_MG H_n! Ch_w__! Th_y'r_ _ll h_r_!")
+
+    def test_questioner_asks_a_question_to_the_chat_to_start(self):
+        question = {
+            'Ask': "What's a Diorama?",
+            'Answer': "OMG Han! Chewie! They're all here!"
+        }
+        subject = Subject(question).start()
+        self.assertEqual(True, True)

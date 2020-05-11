@@ -12,19 +12,19 @@ class Questioner:
         self.ask = question['Ask']
         self.answer = question['Answer']
 
-        def go(self):
-            self.start()
-            self.run()
-            self.end()
+    def go(self):
+        self.start()
+        self.run()
+        self.end()
 
-        def start(self):
-            pass
+    def start(self):
+        pass
 
-        def run(self):
-            pass
+    def run(self):
+        pass
 
-        def end(self):
-            pass
+    def end(self):
+        pass
 
     def check_answer(self, participant_answer):
         participant_answer = Questioner.clean(participant_answer)
