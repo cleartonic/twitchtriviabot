@@ -8,9 +8,10 @@ class Questioner:
         letters_only = filter(str.isalpha, lower_case)
         return "".join(letters_only)
 
-    def __init__(self, question):
+    def __init__(self, question, connection):
         self.ask = question['Ask']
         self.answer = question['Answer']
+        self.connection = connection
 
     def go(self):
         self.start()
@@ -18,7 +19,7 @@ class Questioner:
         self.end()
 
     def start(self):
-        pass
+        self.connection.sendmessage(self.ask)
 
     def run(self):
         pass

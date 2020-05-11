@@ -1,6 +1,7 @@
 class Round():
-    def __init__(self, questioner, questions):
-        self.questioners = [questioner(question) for question in questions]
+    def __init__(self, questioner, questions, connection):
+        self.connection = connection
+        self.questioners = [questioner(question, connection) for question in questions]
 
     def go(self):
         self.start()
