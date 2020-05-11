@@ -1,4 +1,5 @@
 class Game:
+    trivia_active = False
 
     def go(self):
         self.start()
