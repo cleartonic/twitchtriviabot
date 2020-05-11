@@ -1,4 +1,6 @@
 import re
+import random
+from src.messages import Chat
 
 class Questioner:
     hint_replacement = '_'
@@ -25,7 +27,7 @@ class Questioner:
         pass
 
     def end(self):
-        pass
+        self.connection.send(random.choice(Chat.unanswered_questions))
 
     def check_answer(self, participant_answer):
         participant_answer = Questioner.clean(participant_answer)

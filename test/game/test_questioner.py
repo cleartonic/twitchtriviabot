@@ -1,5 +1,6 @@
 import unittest
 from mocks.connection import Connection
+from src.messages import Chat
 from src.game.questioner import Questioner as Subject
 
 class QuestionerTestCase(unittest.TestCase):
@@ -130,3 +131,12 @@ class QuestionerTestCase(unittest.TestCase):
         connection = Connection()
         Subject(question, connection).start()
         self.assertEqual(connection.message, "What's a Diorama?")
+
+    def test_questioner_lets_the_chat_know_its_moving_on(self):
+        question = {
+            'Ask': "What's a Diorama?",
+            'Answer': "OMG Han! Chewie! They're all here!"
+        }
+        connection = Connection()
+        Subject(question, connection).go()
+        self.assertTrue(connection.message in Chat.unanswered_questions)
