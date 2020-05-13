@@ -11,7 +11,7 @@ class Trivvy:
 
     def run(self):
         while self.conn.keep_IRC_running:
-            if Game.trivia_active:
-                trivia_routinechecks()
             reply = self.scan()
+            if Game.trivia_active:
+                trivia_routinechecks(reply)
             time.sleep(self.message_rate)
