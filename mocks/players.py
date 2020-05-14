@@ -14,12 +14,41 @@ class Players():
         }
 
     def score(self, player):
-        if player in self.mockscores.keys():
-            player['round_points'] += 1
-            player['game_points'] += 1
+        if player in self.mock_scores.keys():
+            self.up_score(player)
         else:
-            self.mock_scores[player] = {
-                "round_points": 1,
-                "game_points": 1,
-                "game_wins": 0
-            }
+            self.add_to_board(player)
+
+    def up_score(self, player):
+        player['round_points'] += 1
+        player['game_points'] += 1
+
+    def add_to_board(self, player):
+        self.mock_scores[player] = {
+            "round_points": 1,
+            "game_points": 1,
+            "game_wins": 0
+        }
+
+    def winner(self, player):
+        if player in self.mock_scores.keys():
+            self.mock_scores[player]["game_wins"] += 1
+
+    def new_round(self):
+        self.reset("round_points")
+
+    def new_game(self):
+        self.reset("game_points")
+
+    def reset(self, thing_to_be_reset):
+        for score in self.mock_scores.values():
+            score[thing_to_be_reset] = 0
+
+    def round_winners(self):
+        pass
+
+    def game_winners(self):
+        pass
+
+    def top_players(self):
+        pass
