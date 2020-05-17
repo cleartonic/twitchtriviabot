@@ -1,0 +1,8 @@
+backup/*
+latest_session.p
+config/*
+dist/*
+build/*
+venv/*
+twitchtriviabot.spec
+setup.py
