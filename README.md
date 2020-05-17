@@ -37,7 +37,7 @@ A trivia set file (either csv, xls or xlsx) needs to be set up (more on this bel
     + Port = default 6667 (for twitch)
     + Nick = username for the bot
     + Pass = password in “oath:xxxxxx... “ format. Retrieve from https://twitchapps.com/tmi/ for the bot
-    + Chan = twitch channel to connect the bot to, where trivia will take place. MUST BE PREPENDED WITH # (number sign) (i.e. #cleartonic)
+    + Chan = twitch channel to connect the bot to, where trivia will take place. This has changed in version 2, where no ampersand (#) is needed (i.e. cleartonic)
 
 To set up triviaset.csv properly, consider the following:
 5 headers in this release are specified: ‘Topic/Game, ‘Question’, ‘Answer’, ‘Answer 2’, ‘Creator’. Keep them in this order.
