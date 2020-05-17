@@ -29,6 +29,7 @@ A trivia set file (either csv, xls or xlsx) needs to be set up (more on this bel
     + Trivia_skiptime = Time delay before question is skipped
     + Trivia_questiondelay = Time delay after question is answered before next question is asked
     + Trivia_bonusvalue = Value assigned to BONUS round questions
+    + Trivia_mode = Either 'normal' or 'infinite'. Normal mode ends with a certain # of questions. Infinite mode will only end upon an admins using !triviaend"
   + Under “Admin Settings”, all admins need to be added here. This must be set up in advance in this version, there is no !addadmin [x] command. These need to be separated by exact twitch usernames with commas with no spaces between commas, specifically:
     + E.g., admins = salmon
     + E.g., admins = salmon,tuna
