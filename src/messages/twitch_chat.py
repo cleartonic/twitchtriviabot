@@ -2,6 +2,9 @@ class Chat:
     good_morning = 'Refactored out of a cleartonic fork by @LtJG_Bodhi_Cooper: Trivvy Bot V-0.1.4 has been called into existence.'
     good_night = 'Trivvy Bot V-0.1.4 has business in a parrallel dimension. Bye for now!'
 
+    new_round = "Ok, time to get this round started."
+    end_round = "So that's the round. I could tell you who's winning, but I don't feel like it right now."
+
     unanswered_questions = [
         "Let's just move on, shall we?",
         "Ok, so that was a non-starter",

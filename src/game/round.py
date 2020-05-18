@@ -1,4 +1,5 @@
 from mocks.game_record import Game_Record
+from src.messages import Chat
 
 class Round():
 
@@ -20,10 +21,10 @@ class Round():
         self.end()
 
     def start(self):
-        pass
+        self.connection.send(Chat.new_round)
 
     def run(self):
         pass
 
     def end(self):
-        pass
+        self.connection.send(Chat.end_round)
