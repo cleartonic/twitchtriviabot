@@ -7,10 +7,10 @@ class Commander:
         "!top3"
     ]
 
-    def __init__(self, admins, commands):
+    def __init__(self, admins, connection):
         pass
 
-    def parse_if_command(reply):
+    def respond_to(self, reply):
         username = reply[0]
         message = reply[1]
         pass
