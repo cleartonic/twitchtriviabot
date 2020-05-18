@@ -28,7 +28,7 @@ class RoundTestCase(unittest.TestCase):
         s.start()
         self.assertEqual(mock_connection.message, Chat.new_round)
 
-    def test_questioner_lets_the_chat_know_its_moving_on(self):
+    def test_round_lets_the_chat_know_when_the_round_is_over(self):
         questions = [
             {'Round': 2, 'Ask': 'What is your name?', 'Answer': 'Sir Lancelot of Camelot'},
             {'Round': 2, 'Ask': 'What is your quest?', 'Answer': 'To seek the Holy Grail'},
