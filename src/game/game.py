@@ -14,19 +14,19 @@ class Game:
         return [self.init_r(round_questions) for round_questions in game_questions]
 
     def list_by_rounds(self, questions):
-        round_questions = []
+        game_questions = []
         for question in questions:
-            if len(round_questions) == 0:
-                round_questions.append([question])
+            if len(game_questions) == 0:
+                game_questions.append([question])
             else:
                 question_appended = False
-                for round_set in round_questions:
-                    if question['Round'] == round_set[0]['Round']:
-                        round_set.append(question)
+                for round_questions in game_questions:
+                    if question['Round'] == round_questions[0]['Round']:
+                        round_questions.append(question)
                         question_appended = True
                 if not question_appended:
-                    round_questions.append([question])
-        return round_questions
+                    game_questions.append([question])
+        return game_questions
 
     def init_r(self, round_questions):
         return self.round(self.questioner, round_questions, self.connection)
