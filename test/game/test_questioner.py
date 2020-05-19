@@ -149,5 +149,5 @@ class QuestionerTestCase(unittest.TestCase):
         }
         mock_game_record = Game_Record()
         s = Subject(question, Connection(), mock_game_record)
-        s.go()
+        s.end()
         self.assertEqual(mock_game_record.mock_log[0], question)
