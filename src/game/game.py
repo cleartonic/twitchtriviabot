@@ -13,6 +13,9 @@ class Game:
         game_qs = self.list_by_rounds(questions)
         return [self.init_r(round_questions) for round_questions in game_qs]
 
+    def init_r(self, round_questions):
+        return self.round(self.questioner, round_questions, self.connection)
+
     def list_by_rounds(self, questions):
         game_qs = []
         for q in questions:
@@ -27,9 +30,6 @@ class Game:
                 question_is_the_first_in_a_new_round = False
         if question_is_the_first_in_a_new_round:
             game_questions.append([question])
-
-    def init_r(self, round_questions):
-        return self.round(self.questioner, round_questions, self.connection)
 
     def go(self):
         self.start()
