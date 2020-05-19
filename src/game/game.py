@@ -19,7 +19,7 @@ class Game:
     def list_by_rounds(self, questions):
         game_qs = []
         for q in questions:
-            self.add(q, game_qs) if len(game_qs) != 0 else game_qs.append([q])
+            self.add(q, game_qs) if game_qs else game_qs.append([q])
         return game_qs
 
     def add(self, question, game_questions):
