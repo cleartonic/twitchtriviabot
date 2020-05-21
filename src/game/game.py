@@ -2,11 +2,12 @@ from src.messages import Chat
 
 class Game:
 
-    def __init__(self, round, questioner, questions, connection, game_record):
+    def __init__(self, round, questioner, questions, connection, game_record, players):
         self.questioner = questioner
         self.round = round
         self.connection = connection
         self.game_record = game_record
+        self.players = players
         self.rounds = self.init_rounds(questions)
 
     def init_rounds(self, questions):
@@ -37,11 +38,11 @@ class Game:
         self.end()
 
     def start(self):
-        self.connection.send(Chat.new_game)
+        self.connection.send(Chat.new_game(self.players.top_players()))
 
     def run(self):
         pass
 
     def end(self):
         self.game_record.clear_game()
-        self.connection.send(Chat.end_game)
+        self.connection.send(Chat.end_game(self.players.game_winners()))

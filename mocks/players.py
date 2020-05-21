@@ -1,54 +1,45 @@
 class Players():
     def __init__(self):
-        self.mock_scores = {
-            "trivvy_fan": {
-                "round_points": 4,
-                "game_points": 4,
-                "game_wins": 2
-            },
-            "happy_lass": {
-                "round_points": 6,
-                "game_points": 12,
-                "game_wins": 5
-            }
-        }
+        self.mock_score = "Not Yet Called."
+        self.mock_winner = "Not Yet Called."
+        self.mock_new_round_called = False
+        self.mock_new_game_called = False
 
     def score(self, player):
-        if player in self.mock_scores.keys():
-            self.up_score(player)
-        else:
-            self.add_to_board(player)
-
-    def up_score(self, player):
-        player['round_points'] += 1
-        player['game_points'] += 1
-
-    def add_to_board(self, player):
-        self.mock_scores[player] = {
-            "round_points": 1,
-            "game_points": 1,
-            "game_wins": 0
-        }
+        self.mock_score = player
 
     def winner(self, player):
-        if player in self.mock_scores.keys():
-            self.mock_scores[player]["game_wins"] += 1
+        self.mock_winner = player
 
     def new_round(self):
-        self.reset("round_points")
+        self.mock_new_round_called = True
 
     def new_game(self):
-        self.reset("game_points")
-
-    def reset(self, thing_to_be_reset):
-        for score in self.mock_scores.values():
-            score[thing_to_be_reset] = 0
+        self.mock_new_game_called = True
 
     def round_winners(self):
-        pass
+        return [
+            ("Round_GoldPlayer", 5),
+            ("Round_SilverPlayer", 4),
+            ("Round_BronzePlayer", 3),
+            ("Round_CopperPlayer", 2),
+            ("Round_IronPlayer", 1)
+        ]
 
     def game_winners(self):
-        pass
+        return [
+            ("Game_GoldPlayer", 5),
+            ("Game_SilverPlayer", 4),
+            ("Game_BronzePlayer", 3),
+            ("Game_CopperPlayer", 2),
+            ("Game_IronPlayer", 1)
+        ]
 
     def top_players(self):
-        pass
+        [
+            ("Top_GoldPlayer", 5),
+            ("Top_SilverPlayer", 4),
+            ("Top_BronzePlayer", 3),
+            ("Top_CopperPlayer", 2),
+            ("Top_IronPlayer", 1)
+        ]

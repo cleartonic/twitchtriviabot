@@ -1,6 +1,7 @@
 import unittest
 from mocks.connection import Connection
 from mocks.game_record import Game_Record
+from mocks.players import Players
 from src.messages import Chat
 from src.game.round import Round
 from src.game.questioner import Questioner
@@ -15,14 +16,14 @@ class GameTestCase(unittest.TestCase):
             {'Round': 2, 'Ask': 'What is your favorite color?', 'Answer': 'Blue'},
             {'Round': 3, 'Ask': 'Are you a god?', 'Answer': 'YES!'}
         ]
-        subject = Subject(Round, Questioner, questions, Connection(), Game_Record())
+        subject = Subject(Round, Questioner, questions, Connection(), Game_Record(), Players())
         self.assertEqual(subject.rounds[0].questioners[0].ask, "What's a Diorama?")
         self.assertEqual(subject.rounds[1].questioners[0].ask, 'What is your name?')
         self.assertEqual(subject.rounds[1].questioners[1].ask, 'What is your quest?')
         self.assertEqual(subject.rounds[1].questioners[2].ask, 'What is your favorite color?')
         self.assertEqual(subject.rounds[2].questioners[0].ask, 'Are you a god?')
 
-    def test_game_lets_the_chat_know_a_new_game_started(self):
+    def test_game_lets_the_chat_know_a_new_game_started_by_sending_top_players(self):
         questions = [
             {'Round': 1, 'Ask': "What's a Diorama?", 'Answer': "OMG Han! Chewie! They're all here!"},
             {'Round': 2, 'Ask': 'What is your name?', 'Answer': 'Sir Lancelot of Camelot'},
@@ -31,11 +32,12 @@ class GameTestCase(unittest.TestCase):
             {'Round': 3, 'Ask': 'Are you a god?', 'Answer': 'YES!'}
         ]
         mock_connection = Connection()
-        s = Subject(Round, Questioner, questions, mock_connection, Game_Record())
+        mock_players = Players()
+        s = Subject(Round, Questioner, questions, mock_connection, Game_Record(), mock_players)
         s.start()
-        self.assertEqual(mock_connection.message, Chat.new_game)
+        self.assertEqual(mock_connection.message, Chat.new_game(mock_players.top_players()))
 
-    def test_game_lets_the_chat_know_the_game_is_over(self):
+    def test_game_lets_the_chat_know_the_game_is_over_by_sending_final_scores(self):
         questions = [
             {'Round': 1, 'Ask': "What's a Diorama?", 'Answer': "OMG Han! Chewie! They're all here!"},
             {'Round': 2, 'Ask': 'What is your name?', 'Answer': 'Sir Lancelot of Camelot'},
@@ -44,9 +46,10 @@ class GameTestCase(unittest.TestCase):
             {'Round': 3, 'Ask': 'Are you a god?', 'Answer': 'YES!'}
         ]
         mock_connection = Connection()
-        s = Subject(Round, Questioner, questions, mock_connection, Game_Record())
+        mock_players = Players()
+        s = Subject(Round, Questioner, questions, mock_connection, Game_Record(), mock_players)
         s.go()
-        self.assertEqual(mock_connection.message, Chat.end_game)
+        self.assertEqual(mock_connection.message, Chat.end_game(mock_players.game_winners()))
 
     def test_game_clears_logs_if_it_reaches_the_end_of_the_game(self):
         questions = [
@@ -57,7 +60,7 @@ class GameTestCase(unittest.TestCase):
             {'Round': 3, 'Ask': 'Are you a god?', 'Answer': 'YES!'}
         ]
         mock_game_record = Game_Record()
-        s = Subject(Round, Questioner, questions, Connection(), mock_game_record)
+        s = Subject(Round, Questioner, questions, Connection(), mock_game_record, Players())
         s.end()
         self.assertEqual(mock_game_record.clear_received, True)
 
@@ -83,7 +86,7 @@ class GameTestCase(unittest.TestCase):
             ],
         ]
         mock_game_record = Game_Record()
-        s = Subject(Round, Questioner, initial_questions, Connection(), mock_game_record)
+        s = Subject(Round, Questioner, initial_questions, Connection(), mock_game_record, Players())
         actual_questions = s.list_by_rounds(initial_questions)
         self.assertEqual(actual_questions, expected_questions)
 
@@ -109,7 +112,7 @@ class GameTestCase(unittest.TestCase):
             ],
         ]
         mock_game_record = Game_Record()
-        s = Subject(Round, Questioner, initial_questions, Connection(), mock_game_record)
+        s = Subject(Round, Questioner, initial_questions, Connection(), mock_game_record, Players())
         actual_questions = s.list_by_rounds(initial_questions)
         self.assertEqual(actual_questions, expected_questions)
 
@@ -135,7 +138,7 @@ class GameTestCase(unittest.TestCase):
             ],
         ]
         mock_game_record = Game_Record()
-        s = Subject(Round, Questioner, initial_questions, Connection(), mock_game_record)
+        s = Subject(Round, Questioner, initial_questions, Connection(), mock_game_record, Players())
         actual_questions = s.list_by_rounds(initial_questions)
         self.assertEqual(actual_questions, expected_questions)
 
@@ -161,13 +164,13 @@ class GameTestCase(unittest.TestCase):
             ]
         ]
         mock_game_record = Game_Record()
-        s = Subject(Round, Questioner, initial_questions, Connection(), mock_game_record)
+        s = Subject(Round, Questioner, initial_questions, Connection(), mock_game_record, Players())
         actual_questions = s.list_by_rounds(initial_questions)
         self.assertEqual(actual_questions, expected_questions)
 
     def test_game_init_rounds_returns_an_empty_array_if_no_questions_are_given(self):
         initial_questions = []
         mock_game_record = Game_Record()
-        s = Subject(Round, Questioner, initial_questions, Connection(), mock_game_record)
+        s = Subject(Round, Questioner, initial_questions, Connection(), mock_game_record, Players())
         actual_questions = s.init_rounds(initial_questions)
         self.assertEqual(actual_questions, initial_questions)
