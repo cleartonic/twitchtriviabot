@@ -3,10 +3,11 @@ from src.messages import Chat
 
 class Round():
 
-    def __init__(self, questioner, questions, connection):
+    def __init__(self, questioner, questions, connection, players):
         self.questioner = questioner
         self.connection = connection
         self.game_record = Game_Record()
+        self.players = players
         self.questioners = self.init_questioners(questions)
 
     def init_questioners(self, questions):

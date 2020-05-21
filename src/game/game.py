@@ -15,7 +15,7 @@ class Game:
         return [self.init_r(round_questions) for round_questions in game_qs]
 
     def init_r(self, round_questions):
-        return self.round(self.questioner, round_questions, self.connection)
+        return self.round(self.questioner, round_questions, self.connection, self.players)
 
     def list_by_rounds(self, questions):
         game_qs = []
