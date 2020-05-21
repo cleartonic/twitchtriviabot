@@ -10,6 +10,12 @@ class Chat:
         "Let's get this party started!"
     ]
 
+    end_game_signoff = [
+        "And that's the game! Here's who won:",
+        "Drum roll please for the winners:",
+        "We have our trivvy champions:"
+    ]
+
     new_round = "Ok, time to get this round started."
 
     unanswered_questions = [
@@ -42,7 +48,7 @@ class Chat:
         return random.choice(Chat.new_game_catchphrase)
 
     def end_game(game_winners):
-        "This is when another bot might say who won. I'll leave that up to the bot commander for now..."
+        return random.choice(Chat.end_game_signoff)
 
     def end_round(round_winners):
         "So that's the round. I could tell you who's winning, but I don't feel like it right now."

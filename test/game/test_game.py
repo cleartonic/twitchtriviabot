@@ -36,7 +36,7 @@ class GameTestCase(unittest.TestCase):
         s.start()
         self.assertNotEqual(mock_connection.message, 'No message recieved.')
 
-    def test_game_lets_the_chat_know_the_game_is_over_by_sending_final_scores(self):
+    def test_game_lets_the_chat_know_the_game_is_over(self):
         questions = [
             {'Round': 1, 'Ask': "What's a Diorama?", 'Answer': "OMG Han! Chewie! They're all here!"},
             {'Round': 2, 'Ask': 'What is your name?', 'Answer': 'Sir Lancelot of Camelot'},
@@ -48,7 +48,7 @@ class GameTestCase(unittest.TestCase):
         mock_players = Players()
         s = Subject(Round, Questioner, questions, mock_connection, Game_Record(), mock_players)
         s.go()
-        self.assertEqual(mock_connection.message, Chat.end_game(mock_players.game_winners()))
+        self.assertNotEqual(mock_connection.message, 'No message recieved.')
 
     def test_game_clears_logs_if_it_reaches_the_end_of_the_game(self):
         questions = [
