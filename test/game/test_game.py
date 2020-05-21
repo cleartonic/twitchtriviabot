@@ -23,7 +23,7 @@ class GameTestCase(unittest.TestCase):
         self.assertEqual(subject.rounds[1].questioners[2].ask, 'What is your favorite color?')
         self.assertEqual(subject.rounds[2].questioners[0].ask, 'Are you a god?')
 
-    def test_game_lets_the_chat_know_a_new_game_started_by_sending_top_players(self):
+    def test_game_lets_the_chat_know_a_new_game_started(self):
         questions = [
             {'Round': 1, 'Ask': "What's a Diorama?", 'Answer': "OMG Han! Chewie! They're all here!"},
             {'Round': 2, 'Ask': 'What is your name?', 'Answer': 'Sir Lancelot of Camelot'},
@@ -32,10 +32,9 @@ class GameTestCase(unittest.TestCase):
             {'Round': 3, 'Ask': 'Are you a god?', 'Answer': 'YES!'}
         ]
         mock_connection = Connection()
-        mock_players = Players()
-        s = Subject(Round, Questioner, questions, mock_connection, Game_Record(), mock_players)
+        s = Subject(Round, Questioner, questions, mock_connection, Game_Record(), Players())
         s.start()
-        self.assertEqual(mock_connection.message, Chat.new_game(mock_players.top_players()))
+        self.assertNotEqual(mock_connection.message, 'No message recieved.')
 
     def test_game_lets_the_chat_know_the_game_is_over_by_sending_final_scores(self):
         questions = [
