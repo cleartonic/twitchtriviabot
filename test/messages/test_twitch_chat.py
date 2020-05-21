@@ -31,3 +31,18 @@ class TwitchChatTestCase(unittest.TestCase):
             if option in actual:
                 signoff_included = True
         self.assertTrue(signoff_included)
+
+    def test_chat_includes_an_end_of_round_signoff_for_end_rounds(self):
+        players = [
+            ("GoldPlayer", 5),
+            ("SilverPlayer", 4),
+            ("BronzePlayer", 3),
+            ("CopperPlayer", 2),
+            ("IronPlayer", 1)
+        ]
+        actual = Subject.end_round(players)
+        conclusion_included = False
+        for option in Subject.end_round_conclusion:
+            if option in actual:
+                conclusion_included = True
+        self.assertTrue(conclusion_included)

@@ -18,6 +18,11 @@ class Chat:
 
     new_round = "Ok, time to get this round started."
 
+    end_round_conclusion = [
+        "That's the end of this round. Leaders:",
+        "Here are the leaders at the end of this round:"
+    ]
+
     unanswered_questions = [
         "Let's just move on, shall we?",
         "Ok, so that was a non-starter",
@@ -51,4 +56,4 @@ class Chat:
         return random.choice(Chat.end_game_signoff)
 
     def end_round(round_winners):
-        "So that's the round. I could tell you who's winning, but I don't feel like it right now."
+        return random.choice(Chat.end_round_conclusion)
