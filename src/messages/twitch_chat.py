@@ -27,6 +27,29 @@ class Chat:
         "Here are the leaders at the end of this round:"
     ]
 
+    no_scores = [
+        "I'd tell you who is winning, but no one has scored",
+        "Are you even playing? Because I got no scores.",
+        "You miss 100% of the shots you don't take. No scores yet..."
+        "man. these must be some hard questions. No one's gotten any of it right."
+    ]
+
+    sole_score = [
+        "Look there was only one person who scored so guess what they get the gold."
+    ]
+
+    all_way_tie = [
+        "There may be more who tied, but I can only keep track of three."
+    ]
+
+    tie_for_two = [
+        "What do you know, it's a big tie!"
+    ]
+
+    tie_for_gold = [
+        "It's a tie for gold!"
+    ]
+
     unanswered_questions = [
         "Let's just move on, shall we?",
         "Ok, so that was a non-starter",
@@ -35,22 +58,85 @@ class Chat:
         "... we'll just chalk that one up to beeing poorly worded."
     ]
 
-    def none_played(this_iteration):
-        return f"I'd tell you who is winning, but no one has played {this_iteration}"
+    def player(name, points):
+        return f"{name}: {points}pts"
 
-    def two_way_tie(players):
-        pass
+    def join_players(players):
+        names, scores = zip(*players)
+        return (" & ".join(names), scores[0])
 
-    def three_way_tie(players):
-        pass
+    def gold(player):
+        player = Chat.player(player[0], player[1])
+        return f"*<==={player}===>*"
+
+    def silver(player):
+        player = Chat.player(player[0], player[1])
+        return f"=={player}=="
+
+    def bronze(player):
+        player = Chat.player(player[0], player[1])
+        return f"={player}="
+
+    def none_played():
+        return random.choice(Chat.no_scores)
+
+    def one_player(players):
+        winner = Chat.gold(players[0])
+        comment = random.choice(Chat.sole_score)
+        return f"{comment} {winner}"
+
+    def two_players(players):
+        gold = Chat.gold(players[0])
+        silver = Chat.silver(players[1])
+        return f"{gold} | {silver}"
+
+    def two_person_two_way_tie(players):
+        tied_players [players[0], players[1]]
+        winners = Chat.gold(Chat.join_players(tied_players))
+        comment = random.choice(Chat.tie_for_two)
+        return f"{comment} {winners}"
 
     def no_tie_game(players):
-        gold = f"*<==={players[0][0]}: {players[0][1]}pts===>*"
-        silver = f"=={players[1][0]}: {players[1][1]}pts=="
-        bronze = f"={players[2][0]}: {players[2][1]}pts="
+        gold = Chat.gold(players[0])
+        silver = Chat.silver(players[1])
+        bronze = Chat.bronze(players[2])
         return f"{gold} | {silver} | {bronze}"
 
+    def three_person_two_way_gold_tie(players):
+        tied_players = [players[0], players[1]]
+        gold = Chat.gold(Chat.join_players(tied_players))
+        silver = chat.silver(players[2])
+        winners = f"{gold} | {silver}"
+        comment = random.choice(Chat.tie_for_gold)
+        return f"{comment} {winners}"
+
+    def three_person_two_way_silver_tie(players):
+        tied_players = [players[1], players[2]]
+        gold = Chat.gold(players[1])
+        silver = chat.silver(Chat.join_players(tied_players))
+        return f"{gold} | {silver}"
+
+    def three_way_tie(players):
+        tied_players [players[0], players[1], players[2]]
+        winners = Chat.gold(Chat.join_players(tied_players))
+        comment = random.choice(Chat.all_way_tie)
+        return f"{comment} {winners}"
+
     def format_leader_board(players):
+        if len(players) == 0:
+            return Chat.none_played()
+        elif len(players) == 1:
+            return Chat.one_player(players)
+        elif len(players) == 2:
+            if players[0][1] == players[1][1]:
+                return Chat.two_person_two_way_tie(players)
+            return Chat.two_players(players)
+        elif players[0][1] == players[2][1]:
+            return Chat.three_way_tie(players)
+        elif players[0][1] == players[1][1]:
+            return Chat.three_person_two_way_gold_tie(players)
+        elif players[1][1] == players[2][1]:
+            return Chat.three_person_two_way_silver_tie(players)
         return Chat.no_tie_game(players)
 
     def new_round(round_name):
