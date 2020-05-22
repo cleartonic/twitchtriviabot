@@ -44,11 +44,14 @@ class Chat:
     def three_way_tie(players):
         pass
 
-    def format_leader_board(players):
+    def no_tie_game(players):
         gold = f"*<==={players[0][0]}: {players[0][1]}pts===>*"
         silver = f"=={players[1][0]}: {players[1][1]}pts=="
         bronze = f"={players[2][0]}: {players[2][1]}pts="
         return f"{gold} | {silver} | {bronze}"
+
+    def format_leader_board(players):
+        return Chat.no_tie_game(players)
 
     def new_round(round_name):
         return random.choice(Chat.new_round_catchphrase).substitute(name=round_name)
