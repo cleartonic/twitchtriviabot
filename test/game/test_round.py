@@ -27,7 +27,7 @@ class RoundTestCase(unittest.TestCase):
         mock_connection = Connection()
         s = Subject(Questioner, questions, mock_connection, Players())
         s.start()
-        self.assertTrue("2" in mock_connection.message)
+        self.assertTrue("2" in mock_connection._message)
 
     def test_round_lets_the_chat_know_when_the_round_is_over_by_listing_round_winners(self):
         questions = [
@@ -39,4 +39,4 @@ class RoundTestCase(unittest.TestCase):
         mock_players = Players()
         s = Subject(Questioner, questions, mock_connection, mock_players)
         s.go()
-        self.assertNotEqual(mock_connection.message, 'No message recieved.')
+        self.assertNotEqual(mock_connection._message, "No message recieved.")

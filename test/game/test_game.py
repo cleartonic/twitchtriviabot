@@ -34,7 +34,7 @@ class GameTestCase(unittest.TestCase):
         mock_connection = Connection()
         s = Subject(Round, Questioner, questions, mock_connection, Game_Record(), Players())
         s.start()
-        self.assertNotEqual(mock_connection.message, 'No message recieved.')
+        self.assertNotEqual(mock_connection._message, 'No message recieved.')
 
     def test_game_lets_the_chat_know_the_game_is_over(self):
         questions = [
@@ -48,7 +48,7 @@ class GameTestCase(unittest.TestCase):
         mock_players = Players()
         s = Subject(Round, Questioner, questions, mock_connection, Game_Record(), mock_players)
         s.go()
-        self.assertNotEqual(mock_connection.message, 'No message recieved.')
+        self.assertNotEqual(mock_connection._message, 'No message recieved.')
 
     def test_game_clears_logs_if_it_reaches_the_end_of_the_game(self):
         questions = [
@@ -61,7 +61,7 @@ class GameTestCase(unittest.TestCase):
         mock_game_record = Game_Record()
         s = Subject(Round, Questioner, questions, Connection(), mock_game_record, Players())
         s.end()
-        self.assertEqual(mock_game_record.clear_received, True)
+        self.assertEqual(mock_game_record._clear_received, True)
 
     def test_game_converts_a_flat_question_list_to_rounds(self):
         initial_questions = [

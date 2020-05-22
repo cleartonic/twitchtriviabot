@@ -130,7 +130,7 @@ class QuestionerTestCase(unittest.TestCase):
         mock_connection = Connection()
         s = Subject(question, mock_connection, Game_Record())
         s.start()
-        self.assertEqual(mock_connection.message, "What's a Diorama?")
+        self.assertEqual(mock_connection._message, "What's a Diorama?")
 
     def test_questioner_lets_the_chat_know_its_moving_on(self):
         question = {
@@ -140,7 +140,7 @@ class QuestionerTestCase(unittest.TestCase):
         mock_connection = Connection()
         s = Subject(question, mock_connection, Game_Record())
         s.go()
-        self.assertTrue(mock_connection.message in Chat.unanswered_questions)
+        self.assertTrue(mock_connection._message in Chat.unanswered_questions)
 
     def test_questioner_logs_that_it_is_done_with_its_question(self):
         question = {
@@ -150,4 +150,4 @@ class QuestionerTestCase(unittest.TestCase):
         mock_game_record = Game_Record()
         s = Subject(question, Connection(), mock_game_record)
         s.end()
-        self.assertEqual(mock_game_record.mock_log[0], question)
+        self.assertEqual(mock_game_record._log[0], question)
