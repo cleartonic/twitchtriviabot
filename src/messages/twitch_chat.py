@@ -31,7 +31,7 @@ class Chat:
         "I'd tell you who is winning, but no one has scored",
         "Are you even playing? Because I got no scores.",
         "You miss 100% of the shots you don't take. No scores yet..."
-        "man. these must be some hard questions. No one's gotten any of it right."
+        "Man. These must be some hard questions. No one's gotten any of it right."
     ]
 
     sole_score = [
