@@ -18,7 +18,7 @@ class RoundTestCase(unittest.TestCase):
         self.assertEqual(subject.questioners[1].ask, 'What is your quest?')
         self.assertEqual(subject.questioners[2].ask, 'What is your favorite color?')
 
-    def test_round_lets_the_chat_know_a_new_round_started(self):
+    def test_round_lets_the_chat_know_a_new_round_started_by_sending_its_name(self):
         questions = [
             {'Round': 2, 'Ask': 'What is your name?', 'Answer': 'Sir Lancelot of Camelot'},
             {'Round': 2, 'Ask': 'What is your quest?', 'Answer': 'To seek the Holy Grail'},
@@ -27,7 +27,7 @@ class RoundTestCase(unittest.TestCase):
         mock_connection = Connection()
         s = Subject(Questioner, questions, mock_connection, Players())
         s.start()
-        self.assertEqual(mock_connection.message, Chat.new_round)
+        self.assertTrue("2" in mock_connection.message)
 
     def test_round_lets_the_chat_know_when_the_round_is_over_by_listing_round_winners(self):
         questions = [
@@ -39,4 +39,4 @@ class RoundTestCase(unittest.TestCase):
         mock_players = Players()
         s = Subject(Questioner, questions, mock_connection, mock_players)
         s.go()
-        self.assertEqual(mock_connection.message, Chat.end_round(mock_players.round_winners()))
+        self.assertNotEqual(mock_connection.message, 'No message recieved.')

@@ -1,4 +1,5 @@
 import random
+from string import Template
 
 class Chat:
     good_morning = 'Refactored out of a cleartonic fork by @LtJG_Bodhi_Cooper: Trivvy Bot V-2.0 has been called into existence.'
@@ -16,7 +17,10 @@ class Chat:
         "We have our trivvy champions:"
     ]
 
-    new_round = "Ok, time to get this round started."
+    new_round_catchphrase = [
+        Template("Ok, time to get round $name started."),
+        Template("Round $name => FIGHT!")
+    ]
 
     end_round_conclusion = [
         "That's the end of this round. Leaders:",
@@ -49,11 +53,14 @@ class Chat:
     def draw_the_board(players):
         pass
 
+    def new_round(round_name):
+        return random.choice(Chat.new_round_catchphrase).substitute(name=round_name)
+
+    def end_round(round_winners):
+        return random.choice(Chat.end_round_conclusion)
+
     def new_game(top_players):
         return random.choice(Chat.new_game_catchphrase)
 
     def end_game(game_winners):
         return random.choice(Chat.end_game_signoff)
-
-    def end_round(round_winners):
-        return random.choice(Chat.end_round_conclusion)

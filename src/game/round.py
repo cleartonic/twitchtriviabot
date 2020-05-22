@@ -4,6 +4,7 @@ from src.messages import Chat
 class Round():
 
     def __init__(self, questioner, questions, connection, players):
+        self.name = questions[0]['Round'] if questions else 0
         self.questioner = questioner
         self.connection = connection
         self.game_record = Game_Record()
@@ -22,7 +23,7 @@ class Round():
         self.end()
 
     def start(self):
-        self.connection.send(Chat.new_round)
+        self.connection.send(Chat.new_round(self.name))
 
     def run(self):
         pass
