@@ -7,23 +7,17 @@ class Players():
         self._round_winners = [
             ("Round_GoldPlayer", 5),
             ("Round_SilverPlayer", 4),
-            ("Round_BronzePlayer", 3),
-            ("Round_CopperPlayer", 2),
-            ("Round_IronPlayer", 1)
+            ("Round_BronzePlayer", 3)
         ]
         self._game_winners = [
             ("Game_GoldPlayer", 5),
             ("Game_SilverPlayer", 4),
-            ("Game_BronzePlayer", 3),
-            ("Game_CopperPlayer", 2),
-            ("Game_IronPlayer", 1)
+            ("Game_BronzePlayer", 3)
         ]
         self._top_players = [
             ("Top_GoldPlayer", 5),
             ("Top_SilverPlayer", 4),
-            ("Top_BronzePlayer", 3),
-            ("Top_CopperPlayer", 2),
-            ("Top_IronPlayer", 1)
+            ("Top_BronzePlayer", 3)
         ]
 
     def score(self, player):

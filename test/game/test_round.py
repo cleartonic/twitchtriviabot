@@ -37,6 +37,13 @@ class RoundTestCase(unittest.TestCase):
         ]
         mock_connection = Connection()
         mock_players = Players()
+        gold = f"{mock_players._round_winners[0][0]}: {mock_players._round_winners[0][1]}"
+        silver = f"{mock_players._round_winners[1][0]}: {mock_players._round_winners[1][1]}"
+        bronze = f"{mock_players._round_winners[2][0]}: {mock_players._round_winners[2][1]}"
+
         s = Subject(Questioner, questions, mock_connection, mock_players)
         s.go()
-        self.assertTrue(mock_players._round_winners[0][0] in mock_connection._message)
+
+        self.assertTrue(gold in mock_connection._message)
+        self.assertTrue(silver in mock_connection._message)
+        self.assertTrue(bronze in mock_connection._message)
