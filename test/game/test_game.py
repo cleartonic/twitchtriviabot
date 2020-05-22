@@ -23,20 +23,7 @@ class GameTestCase(unittest.TestCase):
         self.assertEqual(subject.rounds[1].questioners[2].ask, 'What is your favorite color?')
         self.assertEqual(subject.rounds[2].questioners[0].ask, 'Are you a god?')
 
-    def test_game_lets_the_chat_know_a_new_game_started(self):
-        questions = [
-            {'Round': 1, 'Ask': "What's a Diorama?", 'Answer': "OMG Han! Chewie! They're all here!"},
-            {'Round': 2, 'Ask': 'What is your name?', 'Answer': 'Sir Lancelot of Camelot'},
-            {'Round': 2, 'Ask': 'What is your quest?', 'Answer': 'To seek the Holy Grail'},
-            {'Round': 2, 'Ask': 'What is your favorite color?', 'Answer': 'Blue'},
-            {'Round': 3, 'Ask': 'Are you a god?', 'Answer': 'YES!'}
-        ]
-        mock_connection = Connection()
-        s = Subject(Round, Questioner, questions, mock_connection, Game_Record(), Players())
-        s.start()
-        self.assertNotEqual(mock_connection._message, 'No message recieved.')
-
-    def test_game_lets_the_chat_know_the_game_is_over(self):
+    def test_game_lets_the_chat_know_a_new_game_started_with_who_the_greatest_players_are(self):
         questions = [
             {'Round': 1, 'Ask': "What's a Diorama?", 'Answer': "OMG Han! Chewie! They're all here!"},
             {'Round': 2, 'Ask': 'What is your name?', 'Answer': 'Sir Lancelot of Camelot'},
@@ -46,9 +33,37 @@ class GameTestCase(unittest.TestCase):
         ]
         mock_connection = Connection()
         mock_players = Players()
+        gold = f"{mock_players._top_players[0][0]}: {mock_players._top_players[0][1]}"
+        silver = f"{mock_players._top_players[1][0]}: {mock_players._top_players[1][1]}"
+        bronze = f"{mock_players._top_players[2][0]}: {mock_players._top_players[2][1]}"
+
+        s = Subject(Round, Questioner, questions, mock_connection, Game_Record(), mock_players)
+        s.start()
+
+        self.assertTrue(gold in mock_connection._message)
+        self.assertTrue(silver in mock_connection._message)
+        self.assertTrue(bronze in mock_connection._message)
+
+    def test_game_lets_the_chat_know_the_game_is_over_with_who_won(self):
+        questions = [
+            {'Round': 1, 'Ask': "What's a Diorama?", 'Answer': "OMG Han! Chewie! They're all here!"},
+            {'Round': 2, 'Ask': 'What is your name?', 'Answer': 'Sir Lancelot of Camelot'},
+            {'Round': 2, 'Ask': 'What is your quest?', 'Answer': 'To seek the Holy Grail'},
+            {'Round': 2, 'Ask': 'What is your favorite color?', 'Answer': 'Blue'},
+            {'Round': 3, 'Ask': 'Are you a god?', 'Answer': 'YES!'}
+        ]
+        mock_connection = Connection()
+        mock_players = Players()
+        gold = f"{mock_players._game_winners[0][0]}: {mock_players._game_winners[0][1]}"
+        silver = f"{mock_players._game_winners[1][0]}: {mock_players._game_winners[1][1]}"
+        bronze = f"{mock_players._game_winners[2][0]}: {mock_players._game_winners[2][1]}"
+
         s = Subject(Round, Questioner, questions, mock_connection, Game_Record(), mock_players)
         s.go()
-        self.assertNotEqual(mock_connection._message, 'No message recieved.')
+
+        self.assertTrue(gold in mock_connection._message)
+        self.assertTrue(silver in mock_connection._message)
+        self.assertTrue(bronze in mock_connection._message)
 
     def test_game_clears_logs_if_it_reaches_the_end_of_the_game(self):
         questions = [

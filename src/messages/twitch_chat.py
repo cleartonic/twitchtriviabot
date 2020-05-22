@@ -62,7 +62,11 @@ class Chat:
         return f"{saying} {winners}"
 
     def new_game(top_players):
-        return random.choice(Chat.new_game_catchphrase)
+        saying = random.choice(Chat.new_game_catchphrase)
+        winners = Chat.format_leader_board(top_players)
+        return f"{saying} {winners}"
 
     def end_game(game_winners):
-        return random.choice(Chat.end_game_signoff)
+        saying = random.choice(Chat.end_game_signoff)
+        winners = Chat.format_leader_board(game_winners)
+        return f"{saying} {winners}"
