@@ -39,4 +39,4 @@ class RoundTestCase(unittest.TestCase):
         mock_players = Players()
         s = Subject(Questioner, questions, mock_connection, mock_players)
         s.go()
-        self.assertNotEqual(mock_connection._message, "No message recieved.")
+        self.assertTrue(mock_players._round_winners[0][0] in mock_connection._message)

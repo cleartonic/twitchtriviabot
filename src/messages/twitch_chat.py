@@ -50,14 +50,16 @@ class Chat:
     def five_way_tie(players):
         pass
 
-    def draw_the_board(players):
-        pass
+    def format_leader_board(players):
+        return f"{players[0][0]}"
 
     def new_round(round_name):
         return random.choice(Chat.new_round_catchphrase).substitute(name=round_name)
 
     def end_round(round_winners):
-        return random.choice(Chat.end_round_conclusion)
+        saying = random.choice(Chat.end_round_conclusion)
+        winners = Chat.format_leader_board(round_winners)
+        return f"{saying} {winners}"
 
     def new_game(top_players):
         return random.choice(Chat.new_game_catchphrase)

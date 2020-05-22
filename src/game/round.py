@@ -29,4 +29,4 @@ class Round():
         pass
 
     def end(self):
-        self.connection.send(Chat.end_round(self.players.round_winners))
+        self.connection.send(Chat.end_round(self.players.round_winners()))
