@@ -17,13 +17,20 @@ class TwitchChatTestCase(unittest.TestCase):
                 catchphrase_included = True
         self.assertTrue(catchphrase_included)
 
+    def test_chat_new_game_message_not_too_long(self):
+        players = [
+            ("ABCDEFGHIJKLMNOPQRSTUVWXY", 5000),
+            ("UserNameThats25characters", 4000),
+            ("leutenant_junior_grade_bo", 3000)
+        ]
+        actual = Subject.new_game(players)
+        self.assertLessEqual(len(actual), 255)
+
     def test_chat_includes_an_end_game_signoff_for_end_games(self):
         players = [
             ("GoldPlayer", 5),
             ("SilverPlayer", 4),
-            ("BronzePlayer", 3),
-            ("CopperPlayer", 2),
-            ("IronPlayer", 1)
+            ("BronzePlayer", 3)
         ]
         actual = Subject.end_game(players)
         signoff_included = False
@@ -32,13 +39,20 @@ class TwitchChatTestCase(unittest.TestCase):
                 signoff_included = True
         self.assertTrue(signoff_included)
 
+    def test_chat_end_game_message_not_too_long(self):
+        players = [
+            ("ABCDEFGHIJKLMNOPQRSTUVWXY", 5000),
+            ("UserNameThats25characters", 4000),
+            ("leutenant_junior_grade_bo", 3000)
+        ]
+        actual = Subject.end_game(players)
+        self.assertLessEqual(len(actual), 255)
+
     def test_chat_includes_an_end_of_round_signoff_for_end_rounds(self):
         players = [
             ("GoldPlayer", 5),
             ("SilverPlayer", 4),
-            ("BronzePlayer", 3),
-            ("CopperPlayer", 2),
-            ("IronPlayer", 1)
+            ("BronzePlayer", 3)
         ]
         actual = Subject.end_round(players)
         conclusion_included = False
@@ -46,3 +60,12 @@ class TwitchChatTestCase(unittest.TestCase):
             if option in actual:
                 conclusion_included = True
         self.assertTrue(conclusion_included)
+
+    def test_chat_end_round_message_not_too_long(self):
+        players = [
+            ("ABCDEFGHIJKLMNOPQRSTUVWXY", 5000),
+            ("UserNameThats25characters", 4000),
+            ("leutenant_junior_grade_bo", 3000)
+        ]
+        actual = Subject.end_round(players)
+        self.assertLessEqual(len(actual), 255)
