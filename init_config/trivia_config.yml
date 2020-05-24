@@ -1,0 +1,9 @@
+file_name: triviaset.csv
+question_count: 25
+hint_time1: 10
+hint_time2: 20
+skip_time: 30
+question_delay: 5
+question_bonusvalue: 3
+mode: poll2
+admins: admin

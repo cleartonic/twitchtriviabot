@@ -34,7 +34,7 @@ except:
 logging.basicConfig(format='%(asctime)s %(message)s',
                 datefmt='%m/%d/%Y %I:%M:%S %p',
                 filename=os.path.join(THIS_FILEPATH,'config','output_log.log'),
-                filemode='w',
+                filemode='a',
                 level=logging.DEBUG)
 
 VERSION_NUM = "2.0.1"
@@ -351,6 +351,7 @@ class MainWindow(QWidget):
             
     def hide_other_buttons(self):
         self.trivia_start_button.setVisible(False)
+        self.trivia_skip_button.setVisible(False)
         self.trivia_start_button.setText("Start Trivia")
     def end_connection(self):
         logging.debug("Ending connection.")
