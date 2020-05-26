@@ -39,7 +39,7 @@ class Chat:
     ]
 
     all_way_tie = [
-        "There may be more who tied, but I can only keep track of three."
+        "There may be more who tied, but I can only count to three."
     ]
 
     tie_for_two = [
