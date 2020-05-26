@@ -15,7 +15,7 @@ import math
 
 # SETTINGS
 class var():
-    infomessage = 'Twitch Trivia Bot loaded. Version 0.1.3. Developed by cleartonic.'
+    infomessage = 'I hope you enjoyed the film! Get ready for some Crockpot Cinema Trivia!'
 
     # SETTINGS FOR END USERS
     trivia_filename = 'triviaset'               # Specify the filename (default "triviaset")
