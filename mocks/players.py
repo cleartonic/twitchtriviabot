@@ -23,7 +23,7 @@ class Players():
     def score(self, player):
         self._score = player
 
-    def winner(self):
+    def score_winners(self):
         self._winner = self._game_winners[0][0]
 
     def new_round(self):
