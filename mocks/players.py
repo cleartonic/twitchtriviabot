@@ -2,8 +2,8 @@ class Players():
     def __init__(self):
         self._score = "Not Yet Called."
         self._winner = "Not Yet Called."
-        self._new_round_called = False
-        self._new_game_called = "Players has not reset the game scores"
+        self._next_round_called = "Round did not tell Players to reset the Round Scores"
+        self._next_game_called = "Game did not tell Players to reset the Game Scores"
         self._round_winners = [
             ("Round_GoldPlayer", 5),
             ("Round_SilverPlayer", 4),
@@ -26,11 +26,11 @@ class Players():
     def score_winners(self):
         self._winner = self._game_winners[0][0]
 
-    def new_round(self):
-        self._new_round_called = True
+    def reset_scores_for_next_round(self):
+        self._next_round_called = "Round Scores Reset"
 
-    def new_game(self):
-        self._new_game_called = "New Game Called"
+    def reset_scores_for_next_game(self):
+        self._next_game_called = "Game Scores Reset"
 
     def round_winners(self):
         return self._round_winners

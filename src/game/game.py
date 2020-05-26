@@ -47,4 +47,4 @@ class Game:
         self.game_record.clear_game()
         self.connection.send(Chat.end_game(self.players.game_winners()))
         self.players.score_winners()
-        self.players.new_game()
+        self.players.reset_scores_for_next_game()

@@ -102,7 +102,7 @@ class GameTestCase(unittest.TestCase):
         mock_players = Players()
         s = Subject(Round, Questioner, questions, Connection(), Game_Record(), mock_players)
         s.end()
-        self.assertEqual(mock_players._new_game_called, "New Game Called")
+        self.assertEqual(mock_players._next_game_called, "Game Scores Reset")
 
     def test_game_converts_a_flat_question_list_to_rounds(self):
         initial_questions = [
