@@ -26,11 +26,14 @@ class Questioner:
         self.connection.send(self.ask)
 
     def run(self):
-        pass
+        response = self.connection.last_response
+        if response[1] == self.answer:
+            self.connection.send(response[0])
+        else:
+            self.connection.send(random.choice(Chat.unanswered_questions))
 
     def end(self):
         self.game_record.log(self.question)
-        self.connection.send(random.choice(Chat.unanswered_questions))
 
     def check_answer(self, participant_answer):
         participant_answer = Questioner.clean(participant_answer)

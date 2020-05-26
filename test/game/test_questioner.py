@@ -151,3 +151,25 @@ class QuestionerTestCase(unittest.TestCase):
         s = Subject(question, Connection(), mock_game_record)
         s.end()
         self.assertEqual(mock_game_record._log[0], question)
+
+    def test_questioner_ignores_incorect_answers_from_connection(self):
+        question = {
+            'Ask': "What's a Diorama?",
+            'Answer': "OMG Han! Chewie! They're all here!"
+        }
+        mock_connection = Connection()
+        mock_connection.last_response = ("trivvy_fan", "The Wrong Answer")
+        s = Subject(question, mock_connection, Game_Record())
+        s.go()
+        self.assertTrue(mock_connection._message in Chat.unanswered_questions)
+
+    def test_questioner_includes_the_winners_name_when_they_answer_correctly(self):
+        question = {
+            'Ask': "What's a Diorama?",
+            'Answer': "OMG Han! Chewie! They're all here!"
+        }
+        mock_connection = Connection()
+        mock_connection.last_response = ("happy_lass", "OMG Han! Chewie! They're all here!")
+        s = Subject(question, mock_connection, Game_Record())
+        s.go()
+        self.assertTrue(mock_connection.last_response[0] in mock_connection._message)

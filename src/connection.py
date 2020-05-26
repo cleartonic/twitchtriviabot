@@ -16,6 +16,7 @@ class Connection():
         self.auth = connect_to['oauth_token']
         self.name = connect_to['bot_name']
         self.chan = connect_to['channel']
+        self.last_response = ('bot', 'No Messages Recieved')
         self.socket = socket.socket()
         self.irc_header = re.compile(Connection.irc_header_pattern)
         self.make_initial_twitch_connection()
@@ -43,6 +44,7 @@ class Connection():
         return self.log_and_clean_response(username, response_body)
 
     def log_and_clean_response(self, username, response_body):
+        self.last_response = (username, response)
         self.log(report.connect_response(username, response_body))
         clean_response_body = re.sub(r"\s+", "", response_body, flags=re.UNICODE)
         return (username, clean_response_body)
