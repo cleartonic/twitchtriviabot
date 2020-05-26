@@ -28,7 +28,7 @@ class Questioner:
     def run(self):
         response = self.connection.last_response
         if response[1] == self.answer:
-            self.connection.send(response[0])
+            self.connection.send(Chat.correct_answer(response[0]))
         else:
             self.connection.send(random.choice(Chat.unanswered_questions))
 

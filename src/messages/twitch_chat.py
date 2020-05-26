@@ -27,6 +27,10 @@ class Chat:
         "Here are the leaders at the end of this round:"
     ]
 
+    question_winner = [
+        Template("Winner => $name")
+    ]
+
     no_scores = [
         "I'd tell you who is winning, but no one has scored",
         "Are you even playing? Because I got no scores.",
@@ -138,6 +142,9 @@ class Chat:
         elif players[1][1] == players[2][1]:
             return Chat.three_person_two_way_silver_tie(players)
         return Chat.no_tie_game(players)
+
+    def correct_answer(player):
+        return random.choice(Chat.question_winner).substitute(name=player)
 
     def new_round(round_name):
         return random.choice(Chat.new_round_catchphrase).substitute(name=round_name)
