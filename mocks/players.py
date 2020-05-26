@@ -21,16 +21,16 @@ class Players():
         ]
 
     def score(self, player):
-        self.score = player
+        self._score = player
 
-    def winner(self, player):
-        self.winner = player
+    def winner(self):
+        self._winner = self._game_winners[0][0]
 
     def new_round(self):
-        self.new_round_called = True
+        self._new_round_called = True
 
     def new_game(self):
-        self.new_game_called = True
+        self._new_game_called = True
 
     def round_winners(self):
         return self._round_winners

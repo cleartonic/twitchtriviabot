@@ -46,3 +46,4 @@ class Game:
     def end(self):
         self.game_record.clear_game()
         self.connection.send(Chat.end_game(self.players.game_winners()))
+        self.players.winner()
