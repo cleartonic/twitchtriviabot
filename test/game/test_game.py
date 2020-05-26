@@ -91,6 +91,19 @@ class GameTestCase(unittest.TestCase):
         s.end()
         self.assertEqual(mock_players._winner, mock_players._game_winners[0][0])
 
+    def test_game_tells_players_to_reset_scores_for_a_new_game_at_the_end_of_the_game(self):
+        questions = [
+            {'Round': 1, 'Ask': "What's a Diorama?", 'Answer': "OMG Han! Chewie! They're all here!"},
+            {'Round': 2, 'Ask': 'What is your name?', 'Answer': 'Sir Lancelot of Camelot'},
+            {'Round': 2, 'Ask': 'What is your quest?', 'Answer': 'To seek the Holy Grail'},
+            {'Round': 2, 'Ask': 'What is your favorite color?', 'Answer': 'Blue'},
+            {'Round': 3, 'Ask': 'Are you a god?', 'Answer': 'YES!'}
+        ]
+        mock_players = Players()
+        s = Subject(Round, Questioner, questions, Connection(), Game_Record(), mock_players)
+        s.end()
+        self.assertEqual(mock_players._new_game_called, "New Game Called")
+
     def test_game_converts_a_flat_question_list_to_rounds(self):
         initial_questions = [
             {'Round': 1, 'Ask': "What's a Diorama?", 'Answer': "OMG Han! Chewie! They're all here!"},

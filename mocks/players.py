@@ -3,7 +3,7 @@ class Players():
         self._score = "Not Yet Called."
         self._winner = "Not Yet Called."
         self._new_round_called = False
-        self._new_game_called = False
+        self._new_game_called = "Players has not reset the game scores"
         self._round_winners = [
             ("Round_GoldPlayer", 5),
             ("Round_SilverPlayer", 4),
@@ -30,7 +30,7 @@ class Players():
         self._new_round_called = True
 
     def new_game(self):
-        self._new_game_called = True
+        self._new_game_called = "New Game Called"
 
     def round_winners(self):
         return self._round_winners
