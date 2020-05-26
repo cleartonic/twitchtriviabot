@@ -30,3 +30,4 @@ class Round():
 
     def end(self):
         self.connection.send(Chat.end_round(self.players.round_winners()))
+        self.players.reset_scores_for_next_round()

@@ -47,3 +47,14 @@ class RoundTestCase(unittest.TestCase):
         self.assertTrue(gold in mock_connection._message)
         self.assertTrue(silver in mock_connection._message)
         self.assertTrue(bronze in mock_connection._message)
+
+    def test_round_tells_players_to_reset_scores_for_a_new_round_at_the_end_of_its_go(self):
+        questions = [
+            {'Round': 2, 'Ask': 'What is your name?', 'Answer': 'Sir Lancelot of Camelot'},
+            {'Round': 2, 'Ask': 'What is your quest?', 'Answer': 'To seek the Holy Grail'},
+            {'Round': 2, 'Ask': 'What is your favorite color?', 'Answer': 'Blue'},
+        ]
+        mock_players = Players()
+        s = Subject(Questioner, questions, Connection(), mock_players)
+        s.end()
+        self.assertEqual(mock_players._next_round_called, "Round Scores Reset")
