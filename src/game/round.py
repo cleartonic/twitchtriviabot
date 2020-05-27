@@ -1,4 +1,5 @@
-from mocks.game_record import Game_Record
+from mocks.game.game_record import Game_Record
+from mocks.game.timer import Timer
 from src.messages import Chat
 
 class Round():

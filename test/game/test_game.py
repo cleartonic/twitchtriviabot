@@ -1,7 +1,7 @@
 import unittest
 from mocks.connection import Connection
-from mocks.game_record import Game_Record
-from mocks.players import Players
+from mocks.game.game_record import Game_Record
+from mocks.game.players import Players
 from src.messages import Chat
 from src.game.round import Round
 from src.game.questioner import Questioner

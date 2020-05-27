@@ -1,8 +1,10 @@
 import unittest
 from mocks.connection import Connection
-from mocks.game_record import Game_Record
+from mocks.game.game_record import Game_Record
+from mocks.game.timer import Timer
 from src.messages import Chat
 from src.game.questioner import Questioner as Subject
+import time
 
 class QuestionerTestCase(unittest.TestCase):
     def test_questioner_knows_itself_and_expects_strings_as_input(self):
