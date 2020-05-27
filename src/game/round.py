@@ -9,6 +9,7 @@ class Round():
         self.questioner = questioner
         self.connection = connection
         self.game_record = Game_Record()
+        self.timer = Timer()
         self.players = players
         self.questioners = self.init_questioners(questions)
 
@@ -16,7 +17,7 @@ class Round():
         return [self.init_q(question) for question in questions]
 
     def init_q(self, question):
-        return self.questioner(question, self.connection, self.game_record)
+        return self.questioner(question, self.connection, self.game_record, self.timer)
 
     def go(self):
         self.start()

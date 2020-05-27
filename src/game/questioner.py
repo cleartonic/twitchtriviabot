@@ -1,6 +1,7 @@
 import re
 import random
 from src.messages import Chat
+import time
 
 class Questioner:
     hint_replacement = '_'
@@ -10,12 +11,13 @@ class Questioner:
         letters_only = filter(str.isalpha, lower_case)
         return "".join(letters_only)
 
-    def __init__(self, question, connection, game_record):
+    def __init__(self, question, connection, game_record, timer):
         self.question = question
         self.ask = question['Ask']
         self.answer = question['Answer']
         self.connection = connection
         self.game_record = game_record
+        self.timer = timer
 
     def go(self):
         self.start()
@@ -26,10 +28,17 @@ class Questioner:
         self.connection.send(self.ask)
 
     def run(self):
-        response = self.connection.last_response
-        if response[1] == self.answer:
-            self.connection.send(Chat.correct_answer(response[0]))
-        else:
+        question_answered = False
+        times_up = False
+        self.timer.start_question_timer()
+        while(not times_up and not question_answered):
+            time.sleep(self.connection.seconds_per_message)
+            response = self.connection.last_response
+            if self.check_answer(response[1]):
+                question_answered = True
+                self.connection.send(Chat.correct_answer(response[0]))
+            times_up = self.timer.question_time_up()
+        if not question_answered:
             self.connection.send(random.choice(Chat.unanswered_questions))
 
     def end(self):
