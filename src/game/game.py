@@ -4,14 +4,15 @@ class Game:
 
     def __init__(self, round, questioner, questions, connection, game_record, players):
         self.questioner = questioner
+        self.questions = questions
         self.round = round
         self.connection = connection
         self.game_record = game_record
         self.players = players
-        self.rounds = self.init_rounds(questions)
+        self.rounds = []
 
-    def init_rounds(self, questions):
-        game_qs = self.list_by_rounds(questions)
+    def init_rounds(self):
+        game_qs = self.list_by_rounds(self.questions)
         return [self.init_r(round_questions) for round_questions in game_qs]
 
     def init_r(self, round_questions):
@@ -26,7 +27,8 @@ class Game:
     def list_by_rounds(self, questions):
         game_qs = []
         for q in questions:
-            self.add(q, game_qs) if game_qs else game_qs.append([q])
+            if q not in self.game_record.logged_questions():
+                self.add(q, game_qs) if game_qs else game_qs.append([q])
         return game_qs
 
     def add(self, question, game_questions):
@@ -44,13 +46,15 @@ class Game:
         self.end()
 
     def start(self):
+        self.rounds = self.init_rounds()
         self.connection.send(Chat.new_game(self.players.top_players()))
 
     def run(self):
-        pass
+        self.rounds[0].go()
 
     def end(self):
-        self.game_record.clear_game()
-        self.connection.send(Chat.end_game(self.players.game_winners()))
-        self.players.score_winners()
-        self.players.reset_scores_for_next_game()
+        if len(self.rounds) == 1:
+            self.game_record.clear_game()
+            self.connection.send(Chat.end_game(self.players.game_winners()))
+            self.players.score_winners()
+            self.players.reset_scores_for_next_game()
