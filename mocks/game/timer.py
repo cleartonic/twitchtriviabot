@@ -5,7 +5,7 @@ class Timer:
 
     def question_time_up(self):
         self._times_asked += 1
-        return self._times_asked >= 12
+        return self._times_asked >= 18
 
     def question_hint_1_up(self):
         return self._times_asked >= 4

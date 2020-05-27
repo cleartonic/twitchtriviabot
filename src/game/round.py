@@ -28,7 +28,8 @@ class Round():
         self.connection.send(Chat.new_round(self.name))
 
     def run(self):
-        pass
+        for questioner in self.questioners:
+            questioner.go()
 
     def end(self):
         self.connection.send(Chat.end_round(self.players.round_winners()))

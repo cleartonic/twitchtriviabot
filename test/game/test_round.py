@@ -1,4 +1,6 @@
 import unittest
+import time
+from concurrent.futures import ThreadPoolExecutor
 from mocks.connection import Connection
 from mocks.game.game_record import Game_Record
 from mocks.game.players import Players
@@ -58,3 +60,50 @@ class RoundTestCase(unittest.TestCase):
         s = Subject(Questioner, questions, Connection(), mock_players)
         s.end()
         self.assertEqual(mock_players._next_round_called, "Round Scores Reset")
+
+    def chat(self, connection, response):
+        connection.last_response = response
+        time.sleep(connection.seconds_per_message)
+
+    def failure(self, connection):
+        self.chat(connection, ("VILLAGER_1", "Bread!"))
+        self.chat(connection, ("VILLAGER_2", "Apples!"))
+        self.chat(connection, ("VILLAGER_3", "Very small rocks!"))
+        self.chat(connection, ("VILLAGER_1", "Cider!"))
+        self.chat(connection, ("VILLAGER_2", "Uhhh, gravy!"))
+        self.chat(connection, ("VILLAGER_1", "Cherries!"))
+        self.chat(connection, ("VILLAGER_2", "Mud!"))
+        self.chat(connection, ("VILLAGER_3", "Churches -- churches!"))
+        self.chat(connection, ("VILLAGER_2", "Lead -- lead!"))
+
+    def success(self, connection):
+        self.failure(connection)
+        self.chat(connection, ("Arthur", "A duck."))
+        self.chat(connection, ("knight_who_says_ni", "Ni!"))
+
+    def chat_thread(self, connection):
+        self.success(connection)
+        self.failure(connection)
+
+    def test_round_runs_through_a_tiny_round_flow_example(self):
+        questions = [{
+            'Round': 1,
+            'Ask': "What also floats in water?",
+            'Answer': "A Duck!"
+        },
+        {
+            'Round': 1,
+            'Ask': "What is the average airspeed velocity of an unladen swallow?",
+            'Answer': "What do you mean? African or European?"
+        }]
+        mock_connection = Connection()
+        mock_players = Players()
+        s = Subject(Questioner, questions, mock_connection, mock_players)
+
+        with ThreadPoolExecutor(max_workers=2) as e:
+            e.submit(s.go)
+            e.submit(self.chat_thread, mock_connection)
+        self.assertTrue("1" in mock_connection._message_list[0])
+        self.assertEqual(questions[0]["Ask"], mock_connection._message_list[1])
+        self.assertTrue(questions[1]["Ask"] in mock_connection._message_list)
+        self.assertTrue(mock_players._round_winners[0][0] in mock_connection._message)
