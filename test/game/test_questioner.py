@@ -166,6 +166,21 @@ class QuestionerTestCase(unittest.TestCase):
         s.go()
         self.assertTrue(mock_connection._message in Chat.unanswered_questions)
 
+    def test_questioner_has_a_strict_oder_to_its_message_flow(self):
+        question = {
+            'Ask': "What also floats in water?",
+            'Answer': "A Duck!"
+        }
+        mock_connection = Connection()
+        mock_timer = Timer()
+        s = Subject(question, mock_connection, Game_Record(), Timer())
+        s.go()
+        self.assertEqual(len(mock_connection._message_list), 4)
+        self.assertEqual(s.ask, mock_connection._message_list[0])
+        self.assertEqual(s.first_hint(), mock_connection._message_list[1])
+        self.assertEqual(s.second_hint(), mock_connection._message_list[2])
+        self.assertTrue(mock_connection._message_list[3] in Chat.unanswered_questions)
+
     def test_questioner_includes_the_winners_name_when_they_answer_correctly_immediately(self):
         question = {
             'Ask': "What's a Diorama?",
