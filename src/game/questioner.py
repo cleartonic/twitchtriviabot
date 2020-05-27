@@ -1,15 +1,11 @@
 import re
 import random
+from src.mr_clean import Mr
 from src.messages import Chat
 import time
 
 class Questioner:
     hint_replacement = '_'
-
-    def clean(answer):
-        lower_case = answer.lower()
-        letters_only = filter(str.isalpha, lower_case)
-        return "".join(letters_only)
 
     def __init__(self, question, connection, game_record, timer):
         self.question = question
@@ -53,8 +49,8 @@ class Questioner:
         self.game_record.log(self.question)
 
     def check_answer(self, participant_answer):
-        participant_answer = Questioner.clean(participant_answer)
-        correct_answer = Questioner.clean(self.answer)
+        participant_answer = Mr.clean(participant_answer)
+        correct_answer = Mr.clean(self.answer)
         return correct_answer in participant_answer
 
     def first_hint(self):
