@@ -4,7 +4,6 @@ from .messages import Chat
 from .messages import Log as report
 
 class Connection():
-    ignore_repsonse = ('', '')
     irc_header_pattern = r"^:\w+!\w+@\w+\.tmi\.twitch\.tv PRIVMSG #\w+ :"
 
     def __init__(self, connect_to, socket, log):
@@ -16,10 +15,10 @@ class Connection():
         self.auth = connect_to['oauth_token']
         self.name = connect_to['bot_name']
         self.chan = connect_to['channel']
-        self.last_response = ('bot', 'No Messages Recieved')
         self.socket = socket.socket()
         self.irc_header = re.compile(Connection.irc_header_pattern)
         self.make_initial_twitch_connection()
+        self.last_response = ('bot', 'No Messages Recieved')
 
     def send(self, message):
         irc_id = f':{self.name}!{self.name}@{self.name}.tmi.twitch.tv'
@@ -27,27 +26,30 @@ class Connection():
         encoded_answer = answer.encode("utf-8")
         self.socket.send(encoded_answer)
 
+    def scan_for_messages(self):
+        while self.keep_IRC_running:
+            self.scan()
+            time.sleep(self.seconds_per_message)
+
     def scan(self):
         try:
-            response = self.socket.recv(1024).decode("utf-8")
-            return self.report(response)
+            raw_response = self.socket.recv(1024).decode("utf-8")
+            self.last_response = self.report(response)
         except:
-            return Connection.ignore_repsonse
+            self.last_response = self.last_response
 
     def report(self, response):
         if Connection.its_a_ping(response):
             return self.send_a_pong()
         username = re.search(r"\w+", response).group(0)
         if username == self.name:
-            return Connection.ignore_repsonse
+            return self.last_response
         response_body = self.irc_header.sub("", response)
-        return self.log_and_clean_response(username, response_body)
+        return self.log_response(username, response_body)
 
-    def log_and_clean_response(self, username, response_body):
+    def log_response(self, username, response_body):
         self.log(report.connect_response(username, response_body))
-        clean_response_body = re.sub(r"\s+", "", response_body, flags=re.UNICODE)
-        self.last_response = (username, response)
-        return (username, clean_response_body)
+        return (username, response)
 
     def its_a_ping(response):
         return response == "PING :tmi.twitch.tv\r\n"
@@ -55,7 +57,7 @@ class Connection():
     def send_a_pong(self):
         self.socket.send("PONG :tmi.twitch.tv\r\n".encode("utf-8"))
         self.log(report.connect_pong)
-        return Connection.ignore_repsonse
+        return self.last_response
 
     def make_initial_twitch_connection(self):
         try:
