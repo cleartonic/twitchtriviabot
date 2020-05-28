@@ -58,19 +58,18 @@ class Connection():
         return Connection.ignore_repsonse
 
     def make_initial_twitch_connection(self):
-        if self.keep_IRC_running:
-            try:
-                self.connect()
-                self.send_creds()
-                self.send_botname()
-                self.join_channel()
-                time.sleep(1)
-                self.send_hello()
-                self.socket.setblocking(0)
-                self.log(report.connect_complete)
-            except:
-                self.log(report.connect_failure)
-                self.keep_IRC_running = False
+        try:
+            self.connect()
+            self.send_creds()
+            self.send_botname()
+            self.join_channel()
+            time.sleep(1)
+            self.send_hello()
+            self.socket.setblocking(0)
+            self.log(report.connect_complete)
+        except:
+            self.log(report.connect_failure)
+            self.keep_IRC_running = False
 
     def connect(self):
         self.log(report.connect_loading)
