@@ -10,6 +10,6 @@ configFile = 'mocks/config.txt' # 'config.txt'
 config = Configuration(configFile, log)
 connect_to = config.get_connection_constants()
 twitch_connection = Connection(connect_to, socket, log)
-route_commander = Commander(config.get_admins(), twitch_connection)
+route_commander = Commander(config.get_admins(), twitch_connection, log)
 app = Trivvy(twitch_connection, route_commander)
 app.run()
