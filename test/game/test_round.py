@@ -5,7 +5,6 @@ from mocks.connection import Connection
 from mocks.game.game_record import Game_Record
 from mocks.game.players import Players
 from src.messages import Chat
-from src.game.questioner import Questioner
 from src.game.round import Round as Subject
 
 class RoundTestCase(unittest.TestCase):
@@ -15,7 +14,7 @@ class RoundTestCase(unittest.TestCase):
             {'Round': 2, 'Ask': 'What is your quest?', 'Answer': 'To seek the Holy Grail'},
             {'Round': 2, 'Ask': 'What is your favorite color?', 'Answer': 'Blue'},
         ]
-        subject = Subject(Questioner, questions, Connection(), Game_Record(), Players())
+        subject = Subject(questions, Connection(), Game_Record(), Players())
         self.assertEqual(subject.questioners[0].ask, 'What is your name?')
         self.assertEqual(subject.questioners[1].ask, 'What is your quest?')
         self.assertEqual(subject.questioners[2].ask, 'What is your favorite color?')
@@ -27,7 +26,7 @@ class RoundTestCase(unittest.TestCase):
             {'Round': 2, 'Ask': 'What is your favorite color?', 'Answer': 'Blue'},
         ]
         mock_connection = Connection()
-        s = Subject(Questioner, questions, mock_connection, Game_Record(), Players())
+        s = Subject(questions, mock_connection, Game_Record(), Players())
         s.start()
         self.assertTrue("2" in mock_connection._message)
 
@@ -43,7 +42,7 @@ class RoundTestCase(unittest.TestCase):
         silver = f"{mock_players._round_winners[1][0]}: {mock_players._round_winners[1][1]}"
         bronze = f"{mock_players._round_winners[2][0]}: {mock_players._round_winners[2][1]}"
 
-        s = Subject(Questioner, questions, mock_connection, Game_Record(), mock_players)
+        s = Subject(questions, mock_connection, Game_Record(), mock_players)
         s.go()
 
         self.assertTrue(gold in mock_connection._message)
@@ -57,7 +56,7 @@ class RoundTestCase(unittest.TestCase):
             {'Round': 2, 'Ask': 'What is your favorite color?', 'Answer': 'Blue'},
         ]
         mock_players = Players()
-        s = Subject(Questioner, questions, Connection(), Game_Record(), mock_players)
+        s = Subject(questions, Connection(), Game_Record(), mock_players)
         s.end()
         self.assertEqual(mock_players._next_round_called, "Round Scores Reset")
 
@@ -98,11 +97,12 @@ class RoundTestCase(unittest.TestCase):
         }]
         mock_connection = Connection()
         mock_players = Players()
-        s = Subject(Questioner, questions, mock_connection, Game_Record(), mock_players)
+        s = Subject(questions, mock_connection, Game_Record(), mock_players)
 
         with ThreadPoolExecutor(max_workers=2) as e:
             e.submit(s.go)
             e.submit(self.chat_thread, mock_connection)
+            
         self.assertTrue("1" in mock_connection._message_list[0])
         self.assertEqual(questions[0]["Ask"], mock_connection._message_list[1])
         self.assertTrue(questions[1]["Ask"] in mock_connection._message_list)

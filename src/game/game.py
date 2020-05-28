@@ -1,11 +1,10 @@
 from src.messages import Chat
+from src.game.round import Round
 
 class Game:
 
-    def __init__(self, round, questioner, questions, connection, game_record, players):
-        self.questioner = questioner
+    def __init__(self, questions, connection, game_record, players):
         self.questions = questions
-        self.round = round
         self.connection = connection
         self.game_record = game_record
         self.players = players
@@ -16,13 +15,7 @@ class Game:
         return [self.init_r(round_questions) for round_questions in game_qs]
 
     def init_r(self, round_questions):
-        return self.round(
-            self.questioner,
-            round_questions,
-            self.connection,
-            self.game_record,
-            self.players
-        )
+        return Round(round_questions, self.connection, self.game_record, self.players)
 
     def list_by_rounds(self, questions):
         game_qs = []
