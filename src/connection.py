@@ -44,9 +44,9 @@ class Connection():
         return self.log_and_clean_response(username, response_body)
 
     def log_and_clean_response(self, username, response_body):
-        self.last_response = (username, response)
         self.log(report.connect_response(username, response_body))
         clean_response_body = re.sub(r"\s+", "", response_body, flags=re.UNICODE)
+        self.last_response = (username, response)
         return (username, clean_response_body)
 
     def its_a_ping(response):
