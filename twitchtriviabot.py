@@ -15,7 +15,7 @@ import math
 
 # SETTINGS
 class var():
-    infomessage = 'I hope you enjoyed the film! Get ready for some Crockpot Cinema Trivia!'
+    infomessage = 'Thanks a lot Miss Crockbot. You\'re great too. Hello Chat, I hope you enjoyed the film! Get ready for some Crockpot Cinema Trivia!'
 
     # SETTINGS FOR END USERS
     trivia_filename = 'triviaset'               # Specify the filename (default "triviaset")
