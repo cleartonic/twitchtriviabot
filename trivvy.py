@@ -8,6 +8,7 @@ from mocks import socket
 log = print
 configFile = 'mocks/config.txt' # 'config.txt'
 config = Configuration(configFile, log)
+socket = socket.socket()
 connect_to = config.get_connection_constants()
 twitch_connection = Connection(connect_to, socket, log)
 route_commander = Commander(config.get_admins(), twitch_connection, log)

@@ -6,8 +6,10 @@ from .messages import Log as report
 class Connection():
     irc_header_pattern = r"^:\w+!\w+@\w+\.tmi\.twitch\.tv PRIVMSG #\w+ :"
 
-    def __init__(self, connect_to, socket, log):
+    def __init__(self, connect_to, socket, log, sleep_time = 1):
         self.log = log
+        self.socket = socket
+        self.sleep_time = sleep_time
         self.keep_IRC_running = True
         self.seconds_per_message = 1 / 120
         self.host = connect_to['irc_url']
@@ -15,7 +17,6 @@ class Connection():
         self.auth = connect_to['oauth_token']
         self.name = connect_to['bot_name']
         self.chan = connect_to['channel']
-        self.socket = socket.socket()
         self.irc_header = re.compile(Connection.irc_header_pattern)
         self.make_initial_twitch_connection()
         self.last_response = ('bot', 'No Messages Recieved')
@@ -65,7 +66,7 @@ class Connection():
             self.send_creds()
             self.send_botname()
             self.join_channel()
-            time.sleep(1)
+            time.sleep(self.sleep_time)
             self.send_hello()
             self.socket.setblocking(0)
             self.log(report.connect_complete)
