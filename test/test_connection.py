@@ -40,3 +40,22 @@ class ConnectionTestCase(unittest.TestCase):
         sleep_time = 0
         Subject(connect_to, socket.socket(spy_log.log), dont_print, sleep_time)
         self.assertEqual(spy_log._history[-2], expected_message)
+
+    def test_connection_sends_twitch_arbitrary_messages(self):
+        my_id = b':nick_BOTtom!nick_BOTtom@nick_BOTtom.tmi.twitch.tv '
+        address = b'PRIVMSG #home_shopping_network :'
+        body = "My cat's breath smells like cat food."
+        crlf = b'\r\n'
+        expected_message = my_id + address + body.encode('utf-8') + crlf
+        connect_to = {
+            'irc_url':'some_twitch_url',
+            'irc_port': 1701,
+            'bot_name': 'nick_BOTtom',
+            'oauth_token': 'oauth:1337_P@SSw0rd123',
+            'channel': "home_shopping_network"
+        }
+        spy_log = Spy_Log()
+        sleep_time = 0
+        s = Subject(connect_to, socket.socket(spy_log.log), dont_print, sleep_time)
+        s.send(body)
+        self.assertEqual(spy_log._history[-1], expected_message)
