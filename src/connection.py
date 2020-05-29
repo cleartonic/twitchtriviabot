@@ -34,7 +34,7 @@ class Connection():
     def scan(self):
         try:
             raw_response = self.socket.recv(1024).decode("utf-8")
-            self.last_response = self.report(response)
+            self.last_response = self.report(raw_response)
         except:
             self.last_response = self.last_response
 
