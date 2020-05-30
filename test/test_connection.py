@@ -2,6 +2,7 @@ import unittest
 from mocks import socket
 from mocks.silent_log import dont_print
 from mocks.spy_log import Spy_Log
+from src.messages import Chat
 from src.connection import Connection as Subject
 
 class ConnectionTestCase(unittest.TestCase):
@@ -28,9 +29,9 @@ class ConnectionTestCase(unittest.TestCase):
     def test_connection_sends_twitch_a_greeting_on_connection(self):
         my_id = b':nick_BOTtom!nick_BOTtom@nick_BOTtom.tmi.twitch.tv '
         address = b'PRIVMSG #home_shopping_network :'
-        msg_p1 = b'Refactored out of a cleartonic fork by @LtJG_Bodhi_Cooper: '
-        msg_p2 = b'Trivvy Bot V-2.0 has been called into existence.\r\n'
-        expected_message = my_id + address + msg_p1 + msg_p2
+        message = Chat.good_morning.encode('utf-8')
+        crlf = b'\r\n'
+        expected_message = my_id + address + message + crlf
         connect_to = {
             'irc_url':'some_twitch_url',
             'irc_port': 1701,
