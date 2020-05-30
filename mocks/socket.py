@@ -4,11 +4,12 @@ import random
 
 class socket:
 
-    def socket(log = print):
-        return socket(log)
+    def socket(log = print, message = ""):
+        return socket(log, message)
 
-    def __init__(self, log):
+    def __init__(self, log, message):
         self.log = log
+        self.message = message
 
     def connect(self, host_port_tuple):
         self.log(host_port_tuple)
@@ -20,7 +21,9 @@ class socket:
         self.log(int)
 
     def recv(self, int):
-        return fake_reception();
+        if self.message == '':
+            return fake_reception();
+        return self.message.encode('utf-8')
 
 class fake_reception:
 

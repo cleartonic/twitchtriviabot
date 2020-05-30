@@ -16,7 +16,9 @@ class ConnectionTestCase(unittest.TestCase):
         spy_log = Spy_Log()
         what_blocking_should_be_set_to = 0
         sleep_time = 0
+
         Subject(connect_to, socket.socket(spy_log.log), dont_print, sleep_time)
+
         self.assertEqual(spy_log._history[0], ('some_twitch_url', 1701))
         self.assertEqual(spy_log._history[1], b'PASS oauth:1337_P@SSw0rd123\r\n')
         self.assertEqual(spy_log._history[2], b'NICK crash_test_dummy_bot\r\n')
@@ -38,7 +40,9 @@ class ConnectionTestCase(unittest.TestCase):
         }
         spy_log = Spy_Log()
         sleep_time = 0
+
         Subject(connect_to, socket.socket(spy_log.log), dont_print, sleep_time)
+
         self.assertEqual(spy_log._history[-2], expected_message)
 
     def test_connection_sends_twitch_arbitrary_messages(self):
@@ -57,5 +61,95 @@ class ConnectionTestCase(unittest.TestCase):
         spy_log = Spy_Log()
         sleep_time = 0
         s = Subject(connect_to, socket.socket(spy_log.log), dont_print, sleep_time)
+
         s.send(body)
+
         self.assertEqual(spy_log._history[-1], expected_message)
+
+    def test_connection_returns_poorly_formatted_messages_from_twitch(self):
+        first_word = "Badabing"
+        whole_bad_message = f"{first_word} BAD FORMAT: U shoes r peanut butter."
+        connect_to = {
+            'irc_url':'some_twitch_url',
+            'irc_port': 1701,
+            'bot_name': 'nick_BOTtom',
+            'oauth_token': 'oauth:1337_P@SSw0rd123',
+            'channel': "home_shopping_network"
+        }
+        sleep_time = 0
+        mock_socket = socket.socket(dont_print, whole_bad_message)
+        s = Subject(connect_to, mock_socket, dont_print, sleep_time)
+
+        s.scan()
+
+        self.assertEqual(s.last_response[0], first_word)
+        self.assertEqual(s.last_response[1], whole_bad_message)
+
+    def test_connection_recieves_properly_formatted_messages_from_twitch(self):
+        user = "happy_lass"
+        body = "Your shoes are made of peanut butter. Woot!"
+        message = f':{user}!{user}@{user}.tmi.twitch.tv PRIVMSG #t_tv :{body}'
+        connect_to = {
+            'irc_url':'some_twitch_url',
+            'irc_port': 1701,
+            'bot_name': 'nick_BOTtom',
+            'oauth_token': 'oauth:1337_P@SSw0rd123',
+            'channel': "t_tv"
+        }
+        sleep_time = 0
+        mock_socket = socket.socket(dont_print, message)
+        s = Subject(connect_to, mock_socket, dont_print, sleep_time)
+
+        s.scan()
+
+        self.assertEqual(s.last_response, (user, body))
+
+    def test_connection_ignores_messages_from_itself_sent_from_twitch(self):
+        user = "nick_BOTtom"
+        body = "Your shoes are made of peanut butter. Woot!"
+        message = f':{user}!{user}@{user}.tmi.twitch.tv PRIVMSG #t_tv :{body}'
+        connect_to = {
+            'irc_url':'some_twitch_url',
+            'irc_port': 1701,
+            'bot_name': user,
+            'oauth_token': 'oauth:1337_P@SSw0rd123',
+            'channel': "t_tv"
+        }
+        sleep_time = 0
+        mock_socket = socket.socket(dont_print, message)
+        s = Subject(connect_to, mock_socket, dont_print, sleep_time)
+
+        s.scan()
+
+        self.assertEqual(s.last_response, ('bot', 'No Messages Recieved'))
+
+    def test_connection_doesnt_keep_ignored_messages_sent_from_twitch(self):
+        bot = "nick_BOTtom"
+        user = "happy_lass"
+        body = "Your shoes are made of peanut butter. Woot!"
+        last_user_message = (user, body)
+        message = f':{user}!{user}@{user}.tmi.twitch.tv PRIVMSG #t_tv :{body}'
+        bot_message = f':{bot}!{bot}@{bot}.tmi.twitch.tv PRIVMSG #t_tv :{body}'
+        connect_to = {
+            'irc_url':'some_twitch_url',
+            'irc_port': 1701,
+            'bot_name': 'nick_BOTtom',
+            'oauth_token': 'oauth:1337_P@SSw0rd123',
+            'channel': "t_tv"
+        }
+        sleep_time = 0
+        mock_socket = socket.socket(dont_print, message)
+        s = Subject(connect_to, mock_socket, dont_print, sleep_time)
+
+        s.scan()
+
+        self.assertEqual(mock_socket.message, message)
+        self.assertEqual(s.last_response, last_user_message)
+        mock_socket.message = bot_message
+
+        s.scan()
+
+        self.assertEqual(mock_socket.message, bot_message)
+        self.assertEqual(s.last_response, last_user_message)
+        self.assertNotEqual(s.last_response, (bot, body))
+        self.assertNotEqual(s.last_response, ('bot', 'No Messages Recieved'))

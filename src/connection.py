@@ -50,7 +50,7 @@ class Connection():
 
     def log_response(self, username, response_body):
         self.log(report.connect_response(username, response_body))
-        return (username, response)
+        return (username, response_body)
 
     def its_a_ping(response):
         return response == "PING :tmi.twitch.tv\r\n"
