@@ -104,6 +104,27 @@ class ConnectionTestCase(unittest.TestCase):
 
         self.assertEqual(s.last_response, (user, body))
 
+    def test_connection_logs_messages_recieved(self):
+        user = "happy_lass"
+        body = "Woot!"
+        message = f':{user}!{user}@{user}.tmi.twitch.tv PRIVMSG #t_tv :{body}'
+        expected_print = "Chat Message From: happy_lass : Woot!"
+        connect_to = {
+            'irc_url':'some_twitch_url',
+            'irc_port': 1701,
+            'bot_name': 'nick_BOTtom',
+            'oauth_token': 'oauth:1337_P@SSw0rd123',
+            'channel': "t_tv"
+        }
+        sleep_time = 0
+        spy_log = Spy_Log()
+        mock_socket = socket.socket(dont_print, message)
+        s = Subject(connect_to, mock_socket, spy_log.log, sleep_time)
+
+        s.scan()
+
+        self.assertEqual(spy_log._history[-1], expected_print)
+
     def test_connection_ignores_messages_from_itself_sent_from_twitch(self):
         user = "nick_BOTtom"
         body = "Your shoes are made of peanut butter. Woot!"
@@ -145,11 +166,40 @@ class ConnectionTestCase(unittest.TestCase):
 
         self.assertEqual(mock_socket.message, message)
         self.assertEqual(s.last_response, last_user_message)
-        mock_socket.message = bot_message
 
+        mock_socket.message = bot_message
         s.scan()
 
         self.assertEqual(mock_socket.message, bot_message)
         self.assertEqual(s.last_response, last_user_message)
         self.assertNotEqual(s.last_response, (bot, body))
         self.assertNotEqual(s.last_response, ('bot', 'No Messages Recieved'))
+
+    def test_connection_doesnt_log_ignored_messages_sent_from_twitch(self):
+        user = "happy_lass"
+        bot = "nick_BOTtom"
+        body = "Woot!"
+        message = f':{user}!{user}@{user}.tmi.twitch.tv PRIVMSG #t_tv :{body}'
+        bot_message = f':{bot}!{bot}@{bot}.tmi.twitch.tv PRIVMSG #t_tv :{body}'
+        expected_print = "Chat Message From: happy_lass : Woot!"
+        connect_to = {
+            'irc_url':'some_twitch_url',
+            'irc_port': 1701,
+            'bot_name': bot,
+            'oauth_token': 'oauth:1337_P@SSw0rd123',
+            'channel': "t_tv"
+        }
+        sleep_time = 0
+        spy_log = Spy_Log()
+        mock_socket = socket.socket(dont_print, message)
+        s = Subject(connect_to, mock_socket, spy_log.log, sleep_time)
+
+        s.scan()
+
+        self.assertEqual(spy_log._history[-1], expected_print)
+
+        mock_socket.message = bot_message
+        s.scan()
+
+        self.assertEqual(spy_log._history[-1], expected_print)
+        self.assertTrue(bot not in spy_log._history[-1])
