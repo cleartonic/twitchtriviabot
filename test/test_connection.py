@@ -69,6 +69,27 @@ class ConnectionTestCase(unittest.TestCase):
         self.assertEqual(spy_log._history[-3], 'slept for 1 second(s)')
         self.assertEqual(spy_log._history[-2], expected_message)
 
+    def test_logs_a_series_of_feedback_reports_as_it_connects(self):
+        connect_to = {
+            'irc_url':'some_twitch_url',
+            'irc_port': 1701,
+            'bot_name': 'nick_BOTtom',
+            'oauth_token': 'oauth:1337_P@SSw0rd123',
+            'channel': "home_shopping_network"
+        }
+        spy_log = Spy_Log()
+        dont_sleep = Time(dont_print).sleep
+
+        Subject(connect_to, socket.socket(dont_print), spy_log.log, dont_sleep)
+
+        self.assertEqual(spy_log._history[0], Log.connect_loading)
+        self.assertEqual(spy_log._history[1], Log.connect_pass)
+        self.assertEqual(spy_log._history[2], Log.connect_nick)
+        self.assertEqual(spy_log._history[3], Log.connect_join)
+        self.assertEqual(spy_log._history[4], Log.connect_hi)
+        self.assertEqual(spy_log._history[5], Log.connect_complete)
+        self.assertEqual(len(spy_log._history), 6)
+
     def test_connection_sends_twitch_arbitrary_messages(self):
         my_id = b':nick_BOTtom!nick_BOTtom@nick_BOTtom.tmi.twitch.tv '
         address = b'PRIVMSG #home_shopping_network :'
