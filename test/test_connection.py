@@ -304,8 +304,21 @@ class ConnectionTestCase(unittest.TestCase):
 
         self.assertEqual(spy_log._history[-1], pong_log)
 
-    def skip_test_connection_doesnt_recieve_messages_too_fast(self):
-        pass
+    def test_connection_doesnt_recieve_messages_too_fast(self):
+        connect_to = {
+            'irc_url':'some_twitch_url',
+            'irc_port': 1701,
+            'bot_name': 'nick_BOTtom',
+            'oauth_token': 'oauth:1337_P@SSw0rd123',
+            'channel': "home_shopping_network"
+        }
+        spy_log = Spy_Log()
+        spy_on_sleep = Time(spy_log.log).sleep
+        mock_socket = socket.socket(dont_print)
+        s = Subject(connect_to, mock_socket, dont_print, spy_on_sleep)
 
-    def skip_test_connection_doesnt_send_messages_too_fast(self):
-        pass
+        scan_rate = s.seconds_per_message
+        s.scan()
+
+        self.assertEqual(scan_rate, 1 / 120 )
+        self.assertEqual(spy_log._history[-1], f'slept for {scan_rate} second(s)')

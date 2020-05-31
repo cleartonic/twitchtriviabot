@@ -30,9 +30,9 @@ class Connection():
     def scan_for_messages(self):
         while self.keep_IRC_running:
             self.scan()
-            self.sleep(self.seconds_per_message)
 
     def scan(self):
+        self.sleep(self.seconds_per_message)
         try:
             raw_response = self.socket.recv(1024).decode("utf-8")
             self.last_response = self.report(raw_response)
