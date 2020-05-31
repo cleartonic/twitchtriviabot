@@ -18,7 +18,7 @@ class ConnectionTestCase(unittest.TestCase):
             'channel': "home_shopping_network"
         }
         spy_log = Spy_Log()
-        dont_sleep = Time().sleep
+        dont_sleep = Time(dont_print).sleep
 
         Subject(connect_to, socket.socket(spy_log.log), dont_print, dont_sleep)
 
@@ -42,10 +42,31 @@ class ConnectionTestCase(unittest.TestCase):
             'channel': "home_shopping_network"
         }
         spy_log = Spy_Log()
-        dont_sleep = Time().sleep
+        dont_sleep = Time(dont_print).sleep
 
         Subject(connect_to, socket.socket(spy_log.log), dont_print, dont_sleep)
 
+        self.assertEqual(spy_log._history[-2], expected_message)
+
+    def test_connection_sleeps_for_a_second_before_sending_twitch_a_greeting(self):
+        my_id = b':nick_BOTtom!nick_BOTtom@nick_BOTtom.tmi.twitch.tv '
+        address = b'PRIVMSG #home_shopping_network :'
+        message = Chat.good_morning.encode('utf-8')
+        crlf = b'\r\n'
+        expected_message = my_id + address + message + crlf
+        connect_to = {
+            'irc_url':'some_twitch_url',
+            'irc_port': 1701,
+            'bot_name': 'nick_BOTtom',
+            'oauth_token': 'oauth:1337_P@SSw0rd123',
+            'channel': "home_shopping_network"
+        }
+        spy_log = Spy_Log()
+        spy_on_sleep = Time(spy_log.log).sleep
+
+        Subject(connect_to, socket.socket(spy_log.log), dont_print, spy_on_sleep)
+
+        self.assertEqual(spy_log._history[-3], 'slept for 1 second(s)')
         self.assertEqual(spy_log._history[-2], expected_message)
 
     def test_connection_sends_twitch_arbitrary_messages(self):
@@ -62,7 +83,7 @@ class ConnectionTestCase(unittest.TestCase):
             'channel': "home_shopping_network"
         }
         spy_log = Spy_Log()
-        dont_sleep = Time().sleep
+        dont_sleep = Time(dont_print).sleep
         s = Subject(connect_to, socket.socket(spy_log.log), dont_print, dont_sleep)
 
         s.send(body)
@@ -79,7 +100,7 @@ class ConnectionTestCase(unittest.TestCase):
             'oauth_token': 'oauth:1337_P@SSw0rd123',
             'channel': "home_shopping_network"
         }
-        dont_sleep = Time().sleep
+        dont_sleep = Time(dont_print).sleep
         mock_socket = socket.socket(dont_print, whole_bad_message)
         s = Subject(connect_to, mock_socket, dont_print, dont_sleep)
 
@@ -99,7 +120,7 @@ class ConnectionTestCase(unittest.TestCase):
             'oauth_token': 'oauth:1337_P@SSw0rd123',
             'channel': "t_tv"
         }
-        dont_sleep = Time().sleep
+        dont_sleep = Time(dont_print).sleep
         mock_socket = socket.socket(dont_print, message)
         s = Subject(connect_to, mock_socket, dont_print, dont_sleep)
 
@@ -119,7 +140,7 @@ class ConnectionTestCase(unittest.TestCase):
             'oauth_token': 'oauth:1337_P@SSw0rd123',
             'channel': "t_tv"
         }
-        dont_sleep = Time().sleep
+        dont_sleep = Time(dont_print).sleep
         spy_log = Spy_Log()
         mock_socket = socket.socket(dont_print, message)
         s = Subject(connect_to, mock_socket, spy_log.log, dont_sleep)
@@ -139,7 +160,7 @@ class ConnectionTestCase(unittest.TestCase):
             'oauth_token': 'oauth:1337_P@SSw0rd123',
             'channel': "t_tv"
         }
-        dont_sleep = Time().sleep
+        dont_sleep = Time(dont_print).sleep
         mock_socket = socket.socket(dont_print, message)
         s = Subject(connect_to, mock_socket, dont_print, dont_sleep)
 
@@ -161,7 +182,7 @@ class ConnectionTestCase(unittest.TestCase):
             'oauth_token': 'oauth:1337_P@SSw0rd123',
             'channel': "t_tv"
         }
-        dont_sleep = Time().sleep
+        dont_sleep = Time(dont_print).sleep
         mock_socket = socket.socket(dont_print, message)
         s = Subject(connect_to, mock_socket, dont_print, dont_sleep)
 
@@ -192,7 +213,7 @@ class ConnectionTestCase(unittest.TestCase):
             'oauth_token': 'oauth:1337_P@SSw0rd123',
             'channel': "t_tv"
         }
-        dont_sleep = Time().sleep
+        dont_sleep = Time(dont_print).sleep
         spy_log = Spy_Log()
         mock_socket = socket.socket(dont_print, message)
         s = Subject(connect_to, mock_socket, spy_log.log, dont_sleep)
@@ -216,7 +237,7 @@ class ConnectionTestCase(unittest.TestCase):
             'oauth_token': 'oauth:1337_P@SSw0rd123',
             'channel': "t_tv"
         }
-        dont_sleep = Time().sleep
+        dont_sleep = Time(dont_print).sleep
         mock_socket = socket.socket(dont_print, message)
         s = Subject(connect_to, mock_socket, dont_print, dont_sleep)
 
@@ -234,7 +255,7 @@ class ConnectionTestCase(unittest.TestCase):
             'oauth_token': 'oauth:1337_P@SSw0rd123',
             'channel': "t_tv"
         }
-        dont_sleep = Time().sleep
+        dont_sleep = Time(dont_print).sleep
         spy_log = Spy_Log()
         mock_socket = socket.socket(spy_log.log, ping)
         s = Subject(connect_to, mock_socket, dont_print, dont_sleep)
@@ -253,7 +274,7 @@ class ConnectionTestCase(unittest.TestCase):
             'oauth_token': 'oauth:1337_P@SSw0rd123',
             'channel': "t_tv"
         }
-        dont_sleep = Time().sleep
+        dont_sleep = Time(dont_print).sleep
         spy_log = Spy_Log()
         mock_socket = socket.socket(dont_print, ping)
         s = Subject(connect_to, mock_socket, spy_log.log, dont_sleep)

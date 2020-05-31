@@ -1,3 +1,7 @@
 class Time:
+
+    def __init__(self, log):
+        self.log = log
+
     def sleep(self, number):
-        pass
+        self.log(f'slept for {number} second(s)')
