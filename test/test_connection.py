@@ -1,12 +1,15 @@
 import unittest
-from mocks import socket
+from mocks.socket import socket
+from mocks.time import Time
 from mocks.silent_log import dont_print
 from mocks.spy_log import Spy_Log
 from src.messages import Chat
+from src.messages import Log
 from src.connection import Connection as Subject
 
 class ConnectionTestCase(unittest.TestCase):
     def test_connection_successfully_connects_to_twitch(self):
+        what_blocking_should_be_set_to = 0
         connect_to = {
             'irc_url':'some_twitch_url',
             'irc_port': 1701,
@@ -15,10 +18,9 @@ class ConnectionTestCase(unittest.TestCase):
             'channel': "home_shopping_network"
         }
         spy_log = Spy_Log()
-        what_blocking_should_be_set_to = 0
-        sleep_time = 0
+        dont_sleep = Time().sleep
 
-        Subject(connect_to, socket.socket(spy_log.log), dont_print, sleep_time)
+        Subject(connect_to, socket.socket(spy_log.log), dont_print, dont_sleep)
 
         self.assertEqual(spy_log._history[0], ('some_twitch_url', 1701))
         self.assertEqual(spy_log._history[1], b'PASS oauth:1337_P@SSw0rd123\r\n')
@@ -40,9 +42,9 @@ class ConnectionTestCase(unittest.TestCase):
             'channel': "home_shopping_network"
         }
         spy_log = Spy_Log()
-        sleep_time = 0
+        dont_sleep = Time().sleep
 
-        Subject(connect_to, socket.socket(spy_log.log), dont_print, sleep_time)
+        Subject(connect_to, socket.socket(spy_log.log), dont_print, dont_sleep)
 
         self.assertEqual(spy_log._history[-2], expected_message)
 
@@ -60,8 +62,8 @@ class ConnectionTestCase(unittest.TestCase):
             'channel': "home_shopping_network"
         }
         spy_log = Spy_Log()
-        sleep_time = 0
-        s = Subject(connect_to, socket.socket(spy_log.log), dont_print, sleep_time)
+        dont_sleep = Time().sleep
+        s = Subject(connect_to, socket.socket(spy_log.log), dont_print, dont_sleep)
 
         s.send(body)
 
@@ -77,9 +79,9 @@ class ConnectionTestCase(unittest.TestCase):
             'oauth_token': 'oauth:1337_P@SSw0rd123',
             'channel': "home_shopping_network"
         }
-        sleep_time = 0
+        dont_sleep = Time().sleep
         mock_socket = socket.socket(dont_print, whole_bad_message)
-        s = Subject(connect_to, mock_socket, dont_print, sleep_time)
+        s = Subject(connect_to, mock_socket, dont_print, dont_sleep)
 
         s.scan()
 
@@ -97,9 +99,9 @@ class ConnectionTestCase(unittest.TestCase):
             'oauth_token': 'oauth:1337_P@SSw0rd123',
             'channel': "t_tv"
         }
-        sleep_time = 0
+        dont_sleep = Time().sleep
         mock_socket = socket.socket(dont_print, message)
-        s = Subject(connect_to, mock_socket, dont_print, sleep_time)
+        s = Subject(connect_to, mock_socket, dont_print, dont_sleep)
 
         s.scan()
 
@@ -117,10 +119,10 @@ class ConnectionTestCase(unittest.TestCase):
             'oauth_token': 'oauth:1337_P@SSw0rd123',
             'channel': "t_tv"
         }
-        sleep_time = 0
+        dont_sleep = Time().sleep
         spy_log = Spy_Log()
         mock_socket = socket.socket(dont_print, message)
-        s = Subject(connect_to, mock_socket, spy_log.log, sleep_time)
+        s = Subject(connect_to, mock_socket, spy_log.log, dont_sleep)
 
         s.scan()
 
@@ -137,9 +139,9 @@ class ConnectionTestCase(unittest.TestCase):
             'oauth_token': 'oauth:1337_P@SSw0rd123',
             'channel': "t_tv"
         }
-        sleep_time = 0
+        dont_sleep = Time().sleep
         mock_socket = socket.socket(dont_print, message)
-        s = Subject(connect_to, mock_socket, dont_print, sleep_time)
+        s = Subject(connect_to, mock_socket, dont_print, dont_sleep)
 
         s.scan()
 
@@ -159,9 +161,9 @@ class ConnectionTestCase(unittest.TestCase):
             'oauth_token': 'oauth:1337_P@SSw0rd123',
             'channel': "t_tv"
         }
-        sleep_time = 0
+        dont_sleep = Time().sleep
         mock_socket = socket.socket(dont_print, message)
-        s = Subject(connect_to, mock_socket, dont_print, sleep_time)
+        s = Subject(connect_to, mock_socket, dont_print, dont_sleep)
 
         s.scan()
 
@@ -190,10 +192,10 @@ class ConnectionTestCase(unittest.TestCase):
             'oauth_token': 'oauth:1337_P@SSw0rd123',
             'channel': "t_tv"
         }
-        sleep_time = 0
+        dont_sleep = Time().sleep
         spy_log = Spy_Log()
         mock_socket = socket.socket(dont_print, message)
-        s = Subject(connect_to, mock_socket, spy_log.log, sleep_time)
+        s = Subject(connect_to, mock_socket, spy_log.log, dont_sleep)
 
         s.scan()
 
@@ -204,3 +206,64 @@ class ConnectionTestCase(unittest.TestCase):
 
         self.assertEqual(spy_log._history[-1], expected_print)
         self.assertTrue(bot not in spy_log._history[-1])
+
+    def test_connection_doesnt_report_pings(self):
+        message = 'PING :tmi.twitch.tv\r\n'
+        connect_to = {
+            'irc_url':'some_twitch_url',
+            'irc_port': 1701,
+            'bot_name': 'nick_BOTtom',
+            'oauth_token': 'oauth:1337_P@SSw0rd123',
+            'channel': "t_tv"
+        }
+        dont_sleep = Time().sleep
+        mock_socket = socket.socket(dont_print, message)
+        s = Subject(connect_to, mock_socket, dont_print, dont_sleep)
+
+        s.scan()
+
+        self.assertEqual(s.last_response, ('bot', 'No Messages Recieved'))
+
+    def test_connection_pongs_when_pinged(self):
+        ping = 'PING :tmi.twitch.tv\r\n'
+        pong = b'PONG :tmi.twitch.tv\r\n'
+        connect_to = {
+            'irc_url':'some_twitch_url',
+            'irc_port': 1701,
+            'bot_name': 'nick_BOTtom',
+            'oauth_token': 'oauth:1337_P@SSw0rd123',
+            'channel': "t_tv"
+        }
+        dont_sleep = Time().sleep
+        spy_log = Spy_Log()
+        mock_socket = socket.socket(spy_log.log, ping)
+        s = Subject(connect_to, mock_socket, dont_print, dont_sleep)
+
+        s.scan()
+
+        self.assertEqual(spy_log._history[-1], pong)
+
+    def test_connection_logs_its_pongs(self):
+        ping = 'PING :tmi.twitch.tv\r\n'
+        pong_log = Log.connect_pong
+        connect_to = {
+            'irc_url':'some_twitch_url',
+            'irc_port': 1701,
+            'bot_name': 'nick_BOTtom',
+            'oauth_token': 'oauth:1337_P@SSw0rd123',
+            'channel': "t_tv"
+        }
+        dont_sleep = Time().sleep
+        spy_log = Spy_Log()
+        mock_socket = socket.socket(dont_print, ping)
+        s = Subject(connect_to, mock_socket, spy_log.log, dont_sleep)
+
+        s.scan()
+
+        self.assertEqual(spy_log._history[-1], pong_log)
+
+    def skip_test_connection_doesnt_recieve_messages_too_fast(self):
+        pass
+
+    def skip_test_connection_doesnt_send_messages_too_fast(self):
+        pass

@@ -6,10 +6,10 @@ from .messages import Log as report
 class Connection():
     irc_header_pattern = r"^:\w+!\w+@\w+\.tmi\.twitch\.tv PRIVMSG #\w+ :"
 
-    def __init__(self, connect_to, socket, log, sleep_time = 1):
-        self.log = log
+    def __init__(self, connect_to, socket, log, sleep = time.sleep):
         self.socket = socket
-        self.sleep_time = sleep_time
+        self.log = log
+        self.sleep = sleep
         self.keep_IRC_running = True
         self.seconds_per_message = 1 / 120
         self.host = connect_to['irc_url']
@@ -30,7 +30,7 @@ class Connection():
     def scan_for_messages(self):
         while self.keep_IRC_running:
             self.scan()
-            time.sleep(self.seconds_per_message)
+            self.sleep(self.seconds_per_message)
 
     def scan(self):
         try:
@@ -66,7 +66,7 @@ class Connection():
             self.send_creds()
             self.send_botname()
             self.join_channel()
-            time.sleep(self.sleep_time)
+            self.sleep(1)
             self.send_hello()
             self.socket.setblocking(0)
             self.log(report.connect_complete)
