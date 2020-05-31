@@ -79,11 +79,11 @@ class Connection():
 
     def send_creds(self):
         self.log(report.connect_pass)
-        self.socket.send("PASS {}\r\n".format(self.auth).encode("utf-8"))
+        self.socket.send(f"PASS {self.auth}\r\n".encode("utf-8"))
 
     def send_botname(self):
         self.log(report.connect_nick)
-        self.socket.send("NICK {}\r\n".format(self.name).encode("utf-8"))
+        self.socket.send(f"NICK {self.name}\r\n".encode("utf-8"))
 
     def join_channel(self):
         self.log(report.connect_join)
