@@ -66,7 +66,6 @@ class Connection():
             self.send_creds()
             self.send_botname()
             self.join_channel()
-            self.sleep(1)
             self.send_hello()
             self.socket.setblocking(0)
             self.log(report.connect_complete)
@@ -91,5 +90,6 @@ class Connection():
         self.socket.send("JOIN {}\r\n#".format(self.chan).encode("utf-8"))
 
     def send_hello(self):
+        self.sleep(1)
         self.log(report.connect_hi)
         self.send(Chat.good_morning)
