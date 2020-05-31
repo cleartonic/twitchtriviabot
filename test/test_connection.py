@@ -132,7 +132,7 @@ class ConnectionTestCase(unittest.TestCase):
         user = "happy_lass"
         body = "Woot!"
         message = f':{user}!{user}@{user}.tmi.twitch.tv PRIVMSG #t_tv :{body}'
-        expected_print = "Chat Message From: happy_lass : Woot!"
+        expected_print = Log.connect_response(user, body)
         connect_to = {
             'irc_url':'some_twitch_url',
             'irc_port': 1701,
