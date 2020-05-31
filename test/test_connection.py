@@ -25,7 +25,7 @@ class ConnectionTestCase(unittest.TestCase):
         self.assertEqual(spy_log._history[0], ('some_twitch_url', 1701))
         self.assertEqual(spy_log._history[1], b'PASS oauth:1337_P@SSw0rd123\r\n')
         self.assertEqual(spy_log._history[2], b'NICK crash_test_dummy_bot\r\n')
-        self.assertEqual(spy_log._history[3], b'JOIN home_shopping_network\r\n#')
+        self.assertEqual(spy_log._history[3], b'JOIN #home_shopping_network\r\n')
         self.assertEqual(spy_log._history[-1], what_blocking_should_be_set_to)
 
     def test_connection_sends_twitch_a_greeting_on_connection(self):

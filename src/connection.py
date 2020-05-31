@@ -87,7 +87,7 @@ class Connection():
 
     def join_channel(self):
         self.log(report.connect_join)
-        self.socket.send("JOIN {}\r\n#".format(self.chan).encode("utf-8"))
+        self.socket.send(f"JOIN #{self.chan}\r\n".encode("utf-8"))
 
     def send_hello(self):
         self.sleep(1)
