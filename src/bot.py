@@ -1,7 +1,6 @@
 from src.connection import Connection
 from src.commander import Commander
 from concurrent.futures import ThreadPoolExecutor
-import time
 
 class Trivvy:
 
