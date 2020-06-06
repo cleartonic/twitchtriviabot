@@ -5,12 +5,11 @@ from src.commander import Commander
 from mocks import socket
 # import socket
 
-log = print
 configFile = 'mocks/config.txt' # 'config.txt'
-config = Configuration(configFile, log)
+config = Configuration(configFile)
 socket = socket.socket()
 connect_to = config.get_connection_constants()
-twitch_connection = Connection(connect_to, socket, log)
-route_commander = Commander(config.get_admins(), twitch_connection, log)
+twitch_connection = Connection(connect_to, socket)
+route_commander = Commander(config.get_admins(), twitch_connection)
 app = Trivvy(twitch_connection, route_commander)
 app.run()

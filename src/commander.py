@@ -11,7 +11,7 @@ from src.game.round import Round
 from src.game.game import Game
 
 class Commander:
-    def __init__(self, admins, connection, log, sleep = time.sleep):
+    def __init__(self, admins, connection, log = print, sleep = time.sleep):
         self.log = log
         self.sleep = sleep
         self.admins = [Mr.lower(admin) for admin in admins]

@@ -6,7 +6,7 @@ from .messages import Log as report
 class Connection():
     irc_header_pattern = r"^:\w+!\w+@\w+\.tmi\.twitch\.tv PRIVMSG #\w+ :"
 
-    def __init__(self, connect_to, socket, log, sleep = time.sleep):
+    def __init__(self, connect_to, socket, log = print, sleep = time.sleep):
         self.socket = socket
         self.log = log
         self.sleep = sleep
