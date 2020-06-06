@@ -30,27 +30,25 @@ class Commander:
     def respond_to_new_last_message(self):
         self.last_response = self.connection.last_response
         username = Mr.lower(self.last_response[0])
-        message = Mr.clean(self.last_response[1])
+        message = Mr.lower(self.last_response[1])
 
-        commands = {
-            "!go": self.start_the_next_trivia_round,
-            "!stop": self.stop_the_bot
-        }
+        commands = [
+            ("!go", self.start_the_next_trivia_round),
+            ("!stop", self.stop_the_bot),
+        ]
 
-        if message == commands["!go"]:
-            commands["!go"](username)
-        if message == commands["!stop"]:
-            commands["!stop"](username)
+        if message == commands[0][0]:
+            commands[0][1](username, commands[0][0])
+        if message == commands[1][0]:
+            commands[1][1](username, commands[1][0])
 
-    def start_the_next_trivia_round(self, username):
-        command = commands['start_the_next_trivia_round']
+    def start_the_next_trivia_round(self, username, command):
         if username in self.admins:
             self.spin_up_a_trivia_round(username, command)
         else:
             self.log(report.bad_admin(username, command))
 
-    def stop_the_bot(self, username):
-        command = commands['stop_the_bot']
+    def stop_the_bot(self, username, command):
         if username in self.admins:
             self.graceful_shutdown(username, command)
         else:
