@@ -1,19 +1,12 @@
 import time
 from src.mr_clean import Mr
-from .messages import Log as report
-from src.messages import Chat
-
-from src.game.triviaset import Trivia_Set
-from mocks.game.game_record import Game_Record
-from mocks.game.players import Players
-from src.game.questioner import Questioner
-from src.game.round import Round
-from src.game.game import Game
+from src.messages import Log as report
 
 class Commander:
-    def __init__(self, admins, connection, log = print, sleep = time.sleep):
+    def __init__(self, commands, admins, connection, log = print, sleep = time.sleep):
         self.log = log
         self.sleep = sleep
+        self.commands = commands
         self.admins = [Mr.lower(admin) for admin in admins]
         self.connection = connection
         self.last_response = ('bot', 'No Messages Recieved')
@@ -30,39 +23,27 @@ class Commander:
     def respond_to_new_last_message(self):
         self.last_response = self.connection.last_response
         username = Mr.lower(self.last_response[0])
-        message = Mr.lower(self.last_response[1])
+        message = self.last_response[1]
 
-        commands = [
-            ("!go", self.start_the_next_trivia_round),
-            ("!stop", self.stop_the_bot),
-        ]
+        for command in self.commands:
+            if message == command[0]:
+                self.process_command(username, command)
 
-        if message == commands[0][0]:
-            commands[0][1](username, commands[0][0])
-        if message == commands[1][0]:
-            commands[1][1](username, commands[1][0])
+    def process_command(self, username, command):
+        validations = command[2]
+        callback = command[1]
 
-    def start_the_next_trivia_round(self, username, command):
-        if username in self.admins:
-            self.spin_up_a_trivia_round(username, command)
+        if "admin_only" in validations:
+            self.validate_admin(username, command)
         else:
-            self.log(report.bad_admin(username, command))
+            self.log(report.good_command(username, command[0]))
+            callback(self.connection, self.last_response)
 
-    def stop_the_bot(self, username, command):
+    def validate_admin(self, username, command):
+        callback = command[1]
+
         if username in self.admins:
-            self.graceful_shutdown(username, command)
+            self.log(report.good_admin(username, command[0]))
+            callback(self.connection, self.last_response)
         else:
-            self.log(report.bad_admin(username, command))
-
-    def spin_up_a_trivia_round(self, username, command):
-        self.log(report.good_admin(username, command))
-        csv = Trivia_Set("mocks/triviaset.csv") # 'triviaset.csv'
-        if not csv.error:
-            questions = csv.get_questions()
-            game = Game(questions, self.connection, Game_Record(), Players())
-            game.go()
-
-    def graceful_shutdown(self, username, command):
-        self.log(report.good_admin(username, command))
-        self.connection.send(Chat.good_night)
-        self.connection.keep_IRC_running = False
+            self.log(report.bad_admin(username, command[0]))

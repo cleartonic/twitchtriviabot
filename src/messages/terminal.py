@@ -26,3 +26,6 @@ class Log:
 
     def good_admin(username, command):
         return f"The bot has recieved a {command} command issued by {username}."
+
+    def good_command(username, command):
+        return f"The bot has recieved a non-admin {command} command issued by {username}."
