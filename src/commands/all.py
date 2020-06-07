@@ -4,6 +4,6 @@ from .stop import stop
 class all:
     def commands():
         return [
-            go.tuple(),
+            go().tuple(),
             stop.tuple(),
         ]

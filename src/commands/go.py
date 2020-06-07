@@ -7,10 +7,13 @@ class go:
     command = "!go"
     validate = [ "admin_only" ]
 
-    def tuple():
+    def __init__(self):
+        pass
+
+    def tuple(self):
         return (go.command, go.run_the_next_trivia_round, go.validate)
 
-    def run_the_next_trivia_round(connection, _message):
+    def run_the_next_trivia_round(self, connection, _message):
         csv = Trivia_Set("mocks/triviaset.csv") # 'triviaset.csv'
         if not csv.error:
             questions = csv.get_questions()
