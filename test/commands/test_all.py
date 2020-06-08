@@ -2,7 +2,7 @@ import unittest
 import inspect
 from src.commands import all
 
-class GameTestCase(unittest.TestCase):
+class AllCommandsTestCase(unittest.TestCase):
     def test_commands_returns_tuples_with_message_matchers(self):
         subject = all.commands()
 
@@ -35,3 +35,13 @@ class GameTestCase(unittest.TestCase):
             self.assertEqual(type(validations), list)
             for validation in validations:
                 self.assertTrue(validation in valid_validations)
+
+    def test_commands_does_not_contain_name_collisions(self):
+        subject = all.commands()
+        command_messages = []
+        unique = []
+        for command in subject:
+            command_messages.append(command[0])
+            if command[0] not in unique:
+                unique.append(command[0])
+        self.assertEqual(unique, command_messages)
