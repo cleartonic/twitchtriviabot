@@ -37,12 +37,22 @@ logging.basicConfig(format='%(asctime)s %(message)s',
                 filemode='a',
                 level=logging.DEBUG)
 
-VERSION_NUM = "2.0.1"
+VERSION_NUM = "2.1.0"
 # INFO_MESSAGE = 'Twitch Trivia Bot loaded. Version %s. Developed by cleartonic. %s' % (VERSION_NUM, random.randint(0,10000))
 INFO_MESSAGE = 'Twitch Trivia Bot loaded.'
 
-if not os.path.abspath(os.path.join(THIS_FILEPATH,'config')):
+if not os.path.exists(os.path.abspath(os.path.join(THIS_FILEPATH,'config'))):
     os.makedirs(os.path.abspath(os.path.join(THIS_FILEPATH,'config')))
+if not os.path.exists(os.path.abspath(os.path.join(THIS_FILEPATH,'config','scores'))):
+    os.makedirs(os.path.abspath(os.path.join(THIS_FILEPATH,'config','scores')))
+if not os.path.exists(os.path.abspath(os.path.join(THIS_FILEPATH,'config','music'))):
+    os.makedirs(os.path.abspath(os.path.join(THIS_FILEPATH,'config','music')))
+    
+    with open(os.path.abspath(os.path.join(THIS_FILEPATH,'config','music','track.txt')),'w') as f:
+        f.write('Null track')
+    with open(os.path.abspath(os.path.join(THIS_FILEPATH,'config','music','artist.txt')),'w') as f:
+        f.write('Null artist')
+    
 
 class MainWindow(QWidget):
     SCREEN_HEIGHT = 400
@@ -166,7 +176,8 @@ class MainWindow(QWidget):
         self.answer_variable_text.setAlignment(QtCore.Qt.AlignLeft)
         if self.BORDER:
             self.answer_variable_text.setStyleSheet("border:2px solid rgb(255,255,255); ")   
-        
+
+       
         self.category_label.setVisible(False)
         self.question_label.setVisible(False)
         self.answer_label.setVisible(False)            
@@ -196,6 +207,16 @@ class MainWindow(QWidget):
         self.trivia_skip_button.setGeometry(QtCore.QRect(160, 340, 70, 30))
         self.trivia_skip_button.clicked.connect(self.skip_question)
         self.trivia_skip_button.setVisible(False)
+        
+        self.trivia_startq_button = QPushButton("Start Q",self.window)
+        self.trivia_startq_button.setGeometry(QtCore.QRect(160, 340, 70, 30))
+        self.trivia_startq_button.clicked.connect(self.start_question)
+        self.trivia_startq_button.setVisible(False)
+        
+        self.trivia_endq_button = QPushButton("End Q",self.window)
+        self.trivia_endq_button.setGeometry(QtCore.QRect(240, 340, 70, 30))
+        self.trivia_endq_button.clicked.connect(self.end_question)
+        self.trivia_endq_button.setVisible(False)
 
         self.footer_bar_text = QLabel("Developed by @cleartonic  |  twitch.tv/cleartonic",self.window)
         self.footer_bar_text.setGeometry(QtCore.QRect(0, 380, 320, 20))
@@ -258,7 +279,12 @@ class MainWindow(QWidget):
                 self.answer_label.setVisible(True)
                 self.top3_label.setVisible(True)
                 self.top3_variable_text.setText(self.tb.active_session.check_top_3())
-                self.trivia_skip_button.setVisible(True)
+                if str(self.tb.active_session.session_config['music_mode']) == 'true' or self.tb.active_session.session_config['music_mode'] == True:
+                    self.trivia_startq_button.setVisible(True)
+                else:
+                    self.trivia_skip_button.setVisible(True)
+                if self.tb.active_session.session_config['mode'] == 'poll' or self.tb.active_session.session_config['mode'] == 'poll2':    
+                    self.trivia_endq_button.setVisible(True)
                 if self.tb.active_session.questionasked:
                     self.category_variable_text.setVisible(True)
                     self.question_variable_text.setVisible(True)
@@ -287,6 +313,7 @@ class MainWindow(QWidget):
         if self.bot_status_dict['trivia_status'] == "Finished":
             self.trivia_start_button.setText("Start Trivia")
             self.trivia_skip_button.setVisible(False)
+            self.trivia_endq_button.setVisible(False)
             
     def set_all_invisible(self):
         self.category_label.setVisible(False)
@@ -300,6 +327,8 @@ class MainWindow(QWidget):
         self.top3_variable_text.setVisible(False)
         self.trivia_start_button.setVisible(False)
         self.trivia_skip_button.setVisible(False)
+        self.trivia_startq_button.setVisible(False)
+        self.trivia_endq_button.setVisible(False)
     
     def toggle_connect(self):
         logging.debug("Connect %s " % self.connection_active)
@@ -327,6 +356,21 @@ class MainWindow(QWidget):
                 self.tb.active_session.skip_question()
             except:
                 logging.debug("Error on skipping question : %s" % traceback.print_exc())
+                
+    def start_question(self):
+        if self.tb.active_session.trivia_active:
+            try:
+                self.tb.active_session.start_question()
+            except:
+                logging.debug("Error on starting question : %s" % traceback.print_exc())
+                
+    def end_question(self):
+        if self.tb.active_session.trivia_active:
+            try:
+                logging.info("Ending question")
+                self.tb.active_session.end_question()
+            except:
+                logging.debug("Error on ending question : %s" % traceback.print_exc())
         
     def connect(self):
         self.tb = TriviaBot()  
@@ -352,6 +396,8 @@ class MainWindow(QWidget):
     def hide_other_buttons(self):
         self.trivia_start_button.setVisible(False)
         self.trivia_skip_button.setVisible(False)
+        self.trivia_endq_button.setVisible(False)
+        self.trivia_startq_button.setVisible(False)
         self.trivia_start_button.setText("Start Trivia")
     def end_connection(self):
         logging.debug("Ending connection.")
@@ -422,6 +468,25 @@ class TriviaBot(object):
                     self.error_msg = "Config error: Admins must be text only, separated by commas"
                     logging.debug(self.error_msg)
                     self.valid = False
+            elif k == 'order':
+                if v not in ['random','ordered']:
+                    self.error_msg = "Config error: Order must be 'ordered' or 'random' only"
+                    logging.debug(self.error_msg)
+                    self.valid = False
+            elif k == 'music_mode':
+                if type(v) != bool:
+                    self.error_msg = "Config error: Music mode must be set to true or false"
+                    logging.debug(self.error_msg)
+                    self.valid = False                 
+                if v == True:
+                    if "poll2" not in temp_config['mode']:
+                        self.error_msg = "Config error: When using music mode, mode 'poll2' must be chosen"
+                        logging.debug(self.error_msg)
+                        self.valid = False
+                    if "infinite" not in temp_config['length']:
+                        self.error_msg = "Config error: When using music mode, length 'infinite' must be chosen"
+                        logging.debug(self.error_msg)
+                        self.valid = False
                     
 
         if self.valid:
@@ -469,7 +534,10 @@ class TriviaBot(object):
             
             # setup
             try:
-                self.cb.send_message("Trivia has begun! Question Count: %s. Trivia will start in %s seconds." % (self.active_session.question_count, self.active_session.session_config['question_delay']))
+                if self.trivia_config['length'] == 'infinite':
+                    self.cb.send_message("Trivia has begun! Infinite question mode. Trivia will start in %s seconds." % (self.active_session.session_config['question_delay']))
+                else:
+                    self.cb.send_message("Trivia has begun! Question Count: %s. Trivia will start in %s seconds." % (self.active_session.question_count, self.active_session.session_config['question_delay']))
                 time.sleep(self.active_session.session_config['question_delay'])
                 # get first question, ask, then begin loop
                 self.active_session.trivia_active = True
@@ -534,7 +602,6 @@ class TriviaBot(object):
 #            user = self.check_user(username) ########## TO DO
 
             if message in self.admin_commands_list.keys() and username in self.admins:
-#                breakpoint()
                 func = self.admin_commands_list[message]
                 if message == '!score':
                     func(username)
@@ -637,7 +704,6 @@ class TriviaBot(object):
     
                 if message:
                     if not self.trivia_active: #when a session is NOT running
-    #                    breakpoint()
                         
                         # if theres a command thats recognized, the loop may happen elsewhere
                         # this happens with !triviastart 
@@ -677,6 +743,8 @@ class Session(object):
         self.users = []
         self.admin_commands_list = {'!triviaend':self.force_end_of_trivia,
                                     '!skip':self.skip_question,
+                                    '!start':self.start_question,
+                                    '!endquestion':self.end_question,
                                     '!next':self.skip_question,
                                     '!bonus':self.toggle_bonus_mode}
         self.commands_list       = {'!score':self.check_user_score}
@@ -697,65 +765,105 @@ class Session(object):
         logging.debug(out_str)
         self.valid = True
         try:
-            logging.debug("Loading trivia data...")
-            
-            with open(os.path.join('config',self.session_config['file_name']),'r') as f:
-                data = f.read()            
-            data = csv.reader(data.splitlines(),quotechar='"', delimiter=',',quoting=csv.QUOTE_ALL, skipinitialspace=True)
-            self.ts = {}
-            for idx, i in enumerate(data):
-                category, question, answer, answer2, creator = i
-                self.ts[idx] = {'category':category, 'question':question, 'answer':answer,'answer2':answer2,'creator':creator}
-
-            if self.session_config['mode'] == 'poll2':
-                logging.debug("Mode set to poll2, only taking questions with valid answer/answer2...")
-                valid_keys = [i for i in self.ts if self.ts[i]['answer2'] != '']
-                new_ts = {}
-                for i in valid_keys:
-                    new_ts[i] = self.ts[i]
-                self.ts = new_ts
-            
-            self.tsrows = len(self.ts.keys())
-
-            if self.tsrows < self.session_config['question_count']:
-                self.session_config['question_count'] = int(self.tsrows)
-                logging.debug("Warning: Trivia questions for session exceeds trivia set's population. Setting session equal to max questions.")
-
-
-            logging.debug("Creating session set data. Population %s, session %s" % (self.tsrows, self.session_config['question_count']))
-            chosen_idx = random.sample(list(self.ts.keys()), int(self.session_config['question_count']))
-            self.ss = {}
-            for i in chosen_idx:
-                self.ss[i] = self.ts[i]
-
-            try:
-
-                for k, v in self.ss.items():
-                    self.questions.append(Question(v, self.session_config))
-            except Exception as e:
-                logging.debug("Error %s on question creation" % e)
-
-            self.question_count = len(self.questions)
-            logging.debug("Finished setting up Session.")
+            if self.session_config['music_mode']:
+                # in music mode, do not load a trivia set, instead do nothing
+                self.question_count = 99999
+                self.ts = {}
+                self.ss = {}
+                
+            else:
+                logging.debug("Loading trivia data...")
+                
+                with open(os.path.join('config',self.session_config['file_name']),'r') as f:
+                    data = f.read()            
+                data = csv.reader(data.splitlines(),quotechar='"', delimiter=',',quoting=csv.QUOTE_ALL, skipinitialspace=True)
+                self.ts = {}
+                for idx, i in enumerate(data):
+                    category, question, answer, answer2, creator = i
+                    self.ts[idx] = {'category':category, 'question':question, 'answer':answer,'answer2':answer2,'creator':creator}
+    
+                if self.session_config['mode'] == 'poll2':
+                    logging.debug("Mode set to poll2, only taking questions with valid answer/answer2...")
+                    valid_keys = [i for i in self.ts if self.ts[i]['answer2'] != '']
+                    new_ts = {}
+                    for i in valid_keys:
+                        new_ts[i] = self.ts[i]
+                    self.ts = new_ts
+                
+                self.tsrows = len(self.ts.keys())
+    
+                if self.tsrows < self.session_config['question_count']:
+                    self.session_config['question_count'] = int(self.tsrows)
+                    logging.debug("Warning: Trivia questions for session exceeds trivia set's population. Setting session equal to max questions.")
+    
+    
+                logging.debug("Creating session set data. Population %s, session %s" % (self.tsrows, self.session_config['question_count']))
+                chosen_idx = random.sample(list(self.ts.keys()), int(self.session_config['question_count']))
+                if self.session_config['order'] == 'ordered':
+                    chosen_idx.sort()
+                self.ss = {}
+                for i in chosen_idx:
+                    self.ss[i] = self.ts[i]
+                try:
+    
+                    for k, v in self.ss.items():
+                        self.questions.append(Question(v, self.session_config))
+                except Exception as e:
+                    logging.debug("Error %s on question creation" % e)
+                if self.session_config['length'] == 'infinite':
+                    self.question_count = 99999
+                else:
+                    self.question_count = len(self.questions)
+    
+                logging.debug("Finished setting up Session.")
         except Exception as e:
             logging.debug("Error on data load. Check trivia set and make sure file_name matches in config, and that file matches columns/headers correctly\nError code:\n>> %s" % e)
             self.valid = False
-
+                
     
+
+        if str(self.session_config['output']).lower() == 'true' or self.session_config['output'] == True:
+            for i in ['1_place_username','1_place_score','2_place_username','2_place_score','3_place_username','3_place_score','scoreboard']:
+                with open(os.path.join(THIS_FILEPATH,'config','scores','%s.txt' % i),'w') as f:
+                    f.write('')
+
     def call_current_time(self):
         return datetime.datetime.now()
     def report_question_numbers(self):
-        return "%s / %s" % (self.questionno, self.question_count)
+        if self.session_config['length'] == 'infinite':
+            return "%s / %s" % (self.questionno, "inf")
+        else:
+            return "%s / %s" % (self.questionno, self.question_count)
     def call_question(self):
-        try:
-            self.active_question = self.questions.pop()
-            self.active_question.activate_question(self.bonus_round, int(self.session_config['question_bonusvalue']))
-            self.questionasked = True
-            self.cb.send_message("Question %s: %s" % (self.questionno, self.active_question.question_string))
-            logging.debug(self.active_question)
-        except:
-            logging.debug("Error on calling next question, ending trivia...")
-            self.force_end_of_trivia()
+        if self.session_config['music_mode']:
+            try:
+                # create the question based on config/music/ contents each time
+                with open(os.path.join(THIS_FILEPATH,'config','music','artist.txt'),'r') as f:
+                    artist = f.read()
+                with open(os.path.join(THIS_FILEPATH,'config','music','track.txt'),'r') as f:
+                    track = f.read()
+                self.active_question = Question([artist,track],self.session_config,music_mode=True)
+                self.active_question.activate_question(self.bonus_round, int(self.session_config['question_bonusvalue']))
+                self.questionasked = True
+                self.cb.send_message("Question %s: %s" % (self.questionno, self.active_question.question_string))
+                logging.debug(self.active_question)
+            except Exception as e:
+                logging.debug("Error on calling next question, ending trivia...%s" % str(e))
+                self.force_end_of_trivia()
+            
+        else:        
+            try:
+                self.active_question = self.questions.pop()
+                if self.session_config['length'] == 'infinite':
+                    # add the question back, to the start of the index (so its not popped next)
+                    self.questions = [self.active_question] + self.questions
+                self.active_question.activate_question(self.bonus_round, int(self.session_config['question_bonusvalue']))
+                self.questionasked = True
+                self.cb.send_message("Question %s: %s" % (self.questionno, self.active_question.question_string))
+                logging.debug(self.active_question)
+            except:
+                logging.debug("Error on calling next question, ending trivia...")
+                self.force_end_of_trivia()
 
     def question_answered(self, user, answer_slot=None):
         if self.session_config['mode'] == 'single':
@@ -785,7 +893,33 @@ class Session(object):
             elif answer_slot == 2:
                 if user not in self.active_question.answered_user_list2:
                     self.active_question.answered_user_list2.append(user)
+        if str(self.session_config['output']).lower() == 'true' or self.session_config['output'] == True:
+            self.output_session_variables()
             
+    def output_session_variables(self):
+        try:
+            user_dict = {}
+            for u in self.users:
+                user_dict[u.username] = u.points
+            if user_dict:
+                k = Counter(user_dict)
+                top3 = k.most_common(3)
+                for idx, i in enumerate(top3):
+                    with open(os.path.join(THIS_FILEPATH,'config','scores','%s_place_username.txt' % (int(idx) + 1)),'w') as f:
+                        f.write(str(i[0]))
+                    with open(os.path.join(THIS_FILEPATH,'config','scores','%s_place_score.txt' % (int(idx) + 1)),'w') as f:
+                        f.write(str(i[1]))
+            
+                return_str = ''
+                for k, v in user_dict.items():
+                    return_str += '%s: %s\n' % (k,v)
+                with open(os.path.join(THIS_FILEPATH,'config','scores','scoreboard.txt'),'w') as f:
+                    f.write(return_str)
+        except:
+            logging.debug("Error on output session variables method (score txt files) %s" % traceback.print_exc())
+
+
+        
     def check_user(self,username):
         '''
         This checks the username and returns the User object that matches
@@ -894,13 +1028,30 @@ class Session(object):
 
             
         except:
-            logging.debug("Error on hint 1 %s" % traceback.print_exc())
+            logging.debug("Error on skip question %s" % traceback.print_exc())
+    
+    def start_question(self):
+        try:
+            if not self.active_question.active:
+                self.call_question()
+            else:
+                logging.debug("Question already active, ignoring Start Q command")
+        except:
+            logging.debug("Error on start question %s" % traceback.print_exc())
+        
+    def end_question(self):
+        try:
+            self.active_question.question_time_start = datetime.datetime(1990,1,1)
+
+            
+        except:
+            logging.debug("Error on skip question %s" % traceback.print_exc())
             
     def manage_poll_question(self):
         adjuster = datetime.timedelta(seconds = self.session_config['skip_time'])
         adj_time = self.active_question.question_time_start + adjuster
         cur_time = self.call_current_time()
-        if adj_time < cur_time:
+        if adj_time < cur_time and self.active_question.active:
             logging.debug("Scoring current question for poll")
             self.active_question.find_poll_score()
             self.active_question.active = False
@@ -915,6 +1066,9 @@ class Session(object):
                 self.cb.send_message("Question not answered in time. The answer was ** %s **." % self.active_question.answers[0])
 
             if self.active_question.session_config['mode'] == 'poll2':
+                
+                time.sleep(.25)
+                # first score second question
                 if self.active_question.point_dict2:
                     try:
                         first_user = list(self.active_question.point_dict2.keys())[0]
@@ -927,18 +1081,36 @@ class Session(object):
                 else:
                     self.cb.send_message("2nd category question not answered in time. The answer was ** %s **." % self.active_question.answers[1])
 
+                # then bonus points for both
+                
+                bonus_users = []
+                for user in self.active_question.point_dict.keys():
+                    if user in self.active_question.point_dict2.keys():
+                        bonus_users.append(user)
+                        user.points += 2
+                
+                if bonus_users:
+                    time.sleep(.25)
+                    if len(bonus_users) > 3:
+                        self.cb.send_message("More than 3 players answered both prompts correctly, yielding +2 bonus points!")
+                    else:
+                        self.cb.send_message("%s answered both prompts correctly, yielding +2 bonus points!" % ', '.join([user.username]))
             self.questionno += 1
             self.questionasked = False            
     
+            # if music_mode is True, then do nothing after a question is answered 
+            if self.session_config['music_mode']:
+                pass                
             
-            time.sleep(self.session_config['question_delay'])
-            if self.questionno < self.question_count + 1:
-                try:
-                    self.call_question()
-                except:
-                    logging.debug("Error on question call %s" % traceback.print_exc() )
             else:
-                self.force_end_of_trivia()
+                time.sleep(self.session_config['question_delay'])
+                if self.questionno < self.question_count + 1:
+                    try:
+                        self.call_question()
+                    except:
+                        logging.debug("Error on question call %s" % traceback.print_exc() )
+                else:
+                    self.force_end_of_trivia()
 
     def check_actions(self):
         try:
@@ -972,7 +1144,6 @@ class Session(object):
 
             # handle commands first
             if message in self.admin_commands_list.keys() and user.username in self.admins:
-#                breakpoint()
                 func = self.admin_commands_list[message]
                 func()
             if message in self.commands_list:
@@ -1000,22 +1171,29 @@ class Question(object):
     '''
     Takes a row from the session set dataframe and converts into object
     '''
-    def __init__(self, row, session_config):
+    def __init__(self, row, session_config,music_mode=False):
         self.session_config = session_config
         self.active = False
-        self.question = str(row['question'][0]).upper() + row['question'][1:]
-        self.answers = [row['answer'],row['answer2']]
-        self.answers = [i for i in self.answers if i != '']
+        if music_mode:
+            self.question = "Listen to audio..."
+            self.answers = [row[0],row[1]]
+            self.answers = [i for i in self.answers if i != '']            
+            self.category = "Music"
+            self.creator = ''
+        else:
+            self.question = str(row['question'][0]).upper() + row['question'][1:]
+            self.answers = [row['answer'],row['answer2']]
+            self.answers = [i for i in self.answers if i != '']
+            self.category = row['category']
+            if 'category' in row:
+                self.creator = row['creator']
+
         if self.session_config['mode'] == 'poll2':
             try:
                 answers_temp = [self.answers[0], self.answers[1]]
             except:
                 logging.debug("ERROR ON PARSING QUESTION WITH ANSWER/ANSWER2, CHECK TRIVIA SOURCE")
-        self.category = row['category']
-        if 'category' in row:
-            self.creator = row['creator']
-        else:
-            logging.debug("NO")
+
         self.question_string = "%s: %s" % (self.category, self.question)
         self.point_value = 1
         self.set_hints()
@@ -1191,14 +1369,24 @@ class ChatBot(object):
         try:
             self.valid = True
             self.bot_config = auth_config
-            self.s = socket.socket()
-            self.s.connect((self.bot_config['host'], self.bot_config['port']))
-            self.s.send("PASS {}\r\n".format(self.bot_config['pass']).encode("utf-8"))
-            self.s.send("NICK {}\r\n".format(self.bot_config['nick']).encode("utf-8"))
-            self.s.send("JOIN #{}\r\n".format(self.bot_config['chan']).encode("utf-8"))
-            time.sleep(1)
-            self.send_message(self.infomessage)
-            self.s.setblocking(0)
+            try:
+                self.s = socket.socket()
+                self.s.connect((self.bot_config['host'], self.bot_config['port']))
+                self.s.send("PASS {}\r\n".format(self.bot_config['pass']).encode("utf-8"))
+                self.s.send("NICK {}\r\n".format(self.bot_config['nick']).encode("utf-8"))
+                self.s.send("JOIN #{}\r\n".format(self.bot_config['chan']).encode("utf-8"))
+                time.sleep(1)
+                self.send_message(self.infomessage)
+                self.s.setblocking(0)
+            except:
+                self.s = socket.socket()
+                self.s.connect((self.bot_config['host'], self.bot_config['port']))
+                self.s.send("PASS {}\r\n".format(self.bot_config['pass']).encode("utf-8"))
+                self.s.send("NICK {}\r\n".format(self.bot_config['nick']).encode("utf-8"))
+                self.s.send("JOIN #{}\r\n".format(self.bot_config['chan'].lower()).encode("utf-8"))
+                time.sleep(1)
+                self.send_message(self.infomessage)
+                self.s.setblocking(0)       
         except Exception as e:
             logging.debug("Connection failed. Check config settings and reload bot.\nError code:\n%s" % str(e))
             self.valid = False
@@ -1207,7 +1395,10 @@ class ChatBot(object):
     ### Chat message sender func
     def send_message(self, msg):
         answermsg = ":"+self.bot_config['nick']+"!"+self.bot_config['nick']+"@"+self.bot_config['nick']+".tmi.twitch.tv PRIVMSG #"+self.bot_config['chan']+" : "+msg+"\r\n"
-        answermsg2 = answermsg.encode("utf-8")
+        if 'iso' in self.bot_config['encoding'].lower():
+            answermsg2 = answermsg.encode(self.bot_config['encoding'])
+        else:
+            answermsg2 = answermsg.encode("utf-8")
         self.s.send(answermsg2)
         
     def retrieve_messages(self):
@@ -1223,7 +1414,6 @@ class ChatBot(object):
                 if username == self.bot_config['nick']:  # Ignore this bot's messages
                     pass
                 else:
-#                    breakpoint()
                     message = re.compile(r"^:\w+!\w+@\w+\.tmi\.twitch\.tv PRIVMSG #\w+ :").sub("", response)
                     cleanmessage = re.sub(r"\s +", "", message, flags=re.UNICODE).replace("\n","").replace("\r","")
                     

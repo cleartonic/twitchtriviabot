@@ -32,6 +32,11 @@ A trivia set file (csv) needs to be set up (more on this below). Default with th
         + 'single' - Standard trivia, first to answer wins the point
         + 'poll' - In this mode, during the entirety of the skip_time, questions are polled for answers from players. At the end of each question, the first and second player to respond earn more points, then all others get some less amount of point
         + 'poll2' - This is the same as above, but every question has a separate answer pool for "answer" and "answer2". This means, for example, one question can have two separate answers, and players can score on each answer separately
+    + music_mode = `true` or `false`. Music mode is a manually-driven mode where the admin can start and stop questions via "Start Q" and "End Q" buttons on the GUI. Instead of loading the trivia set csv file, every question is loaded from `/config/music/artist.txt` and `track.txt`. Questions do not automatically start after their alloted time is up to answer - instead, the admin will manually choose when the next song is ready to be played. 
+        + Functionally, the admin would prepare these artist/track files, start playing the song for their audience, then press "Start Q" when everything is ready. Answers come in, and when the question is done scoring, the system will wait until the admin chooses to start the next song
+        + In the config file, mode `poll2` and length `infinite` must be selected for music_mode `true`
+    + order = `random` of `ordered`. This allows the questions to be answered in order of the original trivia set, or to be chosen randomly. If `ordered` is chosen, likely it is advised to set `question_count` equal to the number of questions in the trivia set, which will yield all questions in order. 
+    + length = `finite` of `infinite`. When using `infinite`, questions will never stop being asked until the admin chooses to end trivia. Questions are not reshuffled - they will continually be reasked in the same order. `finite` ends trivia after the `question_count` defined above
     + admins - separate by commas
         + E.g., admins = player
         + E.g., admins = player,respondent
@@ -40,7 +45,7 @@ A trivia set file (csv) needs to be set up (more on this below). Default with th
     + port = default 6667 (for twitch)
     + nick = username for the bot
     + pass = password in “oath:xxxxxx... “ format. Retrieve from https://twitchapps.com/tmi/ for the bot
-    + chan = twitch channel to connect the bot to, where trivia will take place. This has changed in version 2, where no number sign (#) is needed (i.e. cleartonic)
+    + chan = twitch channel to connect the bot to, where trivia will take place. This has changed in version 2, where no number sign (#) is needed (i.e. cleartonic). This must match the channel name with capitalizations exactly.
 
 To set up triviaset.csv properly, consider the following:
 5 headers in this release are specified: ‘category, ‘question’, ‘answer’, ‘answer2’, ‘creator’. Keep them in this order.
