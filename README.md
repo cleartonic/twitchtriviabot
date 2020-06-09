@@ -25,13 +25,13 @@ A trivia set file (csv) needs to be set up (more on this below). Default with th
   + Under “trivia_config.yml”, the first two filename & filetype should match the trivia set file (default is ‘triviaset.csv’) All numeric fields represent seconds:
     + question_count = # of questions for the trivia session to include. This will be pulled randomly for the trivia list from csv. To be clear, this number isn't the number of questions in your trivia set, it's the number of questions you want a trivia session to hold
     + hint_time1 / hint_time2 = Time delay before hints 1 and 2 are supplied. Hints are described below
-    + skip_time = Time delay before question is skipped. This is also used during 'poll' modes for how long to wait before polling
+    + skip_time = Time delay before question is skipped. This is also used during `poll` modes for how long to wait before polling
     + question_delay = Time delay after question is answered, before next question is asked
     + question_bonusvalue = Value assigned to BONUS round questions. Bonus round described below
-    + mode = There are three modes:
-        + 'single' - Standard trivia, first to answer wins the point
-        + 'poll' - In this mode, during the entirety of the skip_time, questions are polled for answers from players. At the end of each question, the first and second player to respond earn more points, then all others get some less amount of point
-        + 'poll2' - This is the same as above, but every question has a separate answer pool for "answer" and "answer2". This means, for example, one question can have two separate answers, and players can score on each answer separately
+    + mode = There are three settings:
+        + `single` - Standard trivia, first to answer wins the point
+        + `poll` - In this mode, during the entirety of the skip_time, questions are polled for answers from players. At the end of each question, the first and second player to respond earn more points, then all others get some less amount of point
+        + `poll2` - This is the same as above, but every question has a separate answer pool for "answer" and "answer2". This means, for example, one question can have two separate answers, and players can score on each answer separately
     + music_mode = `true` or `false`. Music mode is a manually-driven mode where the admin can start and stop questions via "Start Q" and "End Q" buttons on the GUI. Instead of loading the trivia set csv file, every question is loaded from `/config/music/artist.txt` and `track.txt`. Questions do not automatically start after their alloted time is up to answer - instead, the admin will manually choose when the next song is ready to be played. 
         + Functionally, the admin would prepare these artist/track files, start playing the song for their audience, then press "Start Q" when everything is ready. Answers come in, and when the question is done scoring, the system will wait until the admin chooses to start the next song
         + In the config file, mode `poll2` and length `infinite` must be selected for music_mode `true`
@@ -46,12 +46,11 @@ A trivia set file (csv) needs to be set up (more on this below). Default with th
     + nick = username for the bot
     + pass = password in “oath:xxxxxx... “ format. Retrieve from https://twitchapps.com/tmi/ for the bot
     + chan = twitch channel to connect the bot to, where trivia will take place. This has changed in version 2, where no number sign (#) is needed (i.e. cleartonic). This must match the channel name with capitalizations exactly.
+    + encoding = either `utf-8` or `ISO-8859-1`. Somewhat experimental, default to `utf-8` for safety
 
 To set up triviaset.csv properly, consider the following:
 5 headers in this release are specified: ‘category, ‘question’, ‘answer’, ‘answer2’, ‘creator’. Keep them in this order.
 Fill out row by row each question, filling in topic/game, and at least 1 Answer column. Creator is not required. 
-When saving the file:
-+ If saving as a csv, the file format must be formatted as `CSV UTF-8` 
 
 A log will be saved per run to `config/output_log.log`. This will accumulate over time, and is useful for debugging problems. At any point, you can delete this file if it becomes too large. 
 
