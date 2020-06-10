@@ -2,6 +2,7 @@ from src.game.triviaset import Trivia_Set
 from mocks.game.game_record import Game_Record
 from mocks.game.players import Players
 from src.game.game import Game
+from src.messages import Log as report
 
 class Go:
     command = "!go"
@@ -17,8 +18,10 @@ class Go:
     def tuple(self):
         return (Go.command, self.run_the_next_trivia_round, Go.validate)
 
-    def run_the_next_trivia_round(self, connection, _message):
-        if not self.game_running:
+    def run_the_next_trivia_round(self, connection, message):
+        if self.game_running:
+            self.log(report.in_progress(message[0], message[1]))
+        else:
             self.lock_run_round(connection)
 
     def lock_run_round(self, connection):

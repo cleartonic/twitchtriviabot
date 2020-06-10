@@ -29,3 +29,6 @@ class Log:
 
     def good_command(username, command):
         return f"The bot has recieved a non-admin {command} command issued by {username}."
+
+    def in_progress(username, command):
+        return f"{username} issued a {command} command, but that command is already running."

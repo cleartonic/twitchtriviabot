@@ -62,6 +62,21 @@ class GoCommandTestCase(unittest.TestCase):
 
         round_start_count = 0
         for message in mock_connection._message_list:
-            if "Round 1" in message:
+            if mock_players._round_winners[0][0] in message:
                 round_start_count += 1
         self.assertEqual(round_start_count, 1)
+
+    def test_go_command_logs_if_another_game_is_in_progress(self):
+        spy = Spy_Log()
+        mock_players = Players()
+        s = Go("mocks/triviaset.csv", Game_Record(), mock_players, spy.log)
+
+        mock_connection = Connection()
+        user = "admiral_akbar"
+        command = "!go"
+        message = (user, command)
+        with ThreadPoolExecutor(max_workers=2) as e:
+            e.submit(s.run_the_next_trivia_round, mock_connection, message)
+            e.submit(s.run_the_next_trivia_round, mock_connection, message)
+
+        self.assertEqual(spy._history[-1], Log.in_progress(user, command))
