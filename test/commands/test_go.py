@@ -1,5 +1,7 @@
 import unittest
+from concurrent.futures import ThreadPoolExecutor
 from mocks.connection import Connection
+from src.messages.twitch_chat import Chat
 from mocks.game.game_record import Game_Record
 from mocks.game.players import Players
 from mocks.silent_log import dont_print
@@ -46,3 +48,20 @@ class GoCommandTestCase(unittest.TestCase):
         s.run_the_next_trivia_round(mock_connection, _message)
 
         self.assertTrue("Ask" in spy._history[-1] and "4" in spy._history[-1])
+
+    def test_go_command_skips_running_if_another_game_is_in_progress(self):
+        spy = Spy_Log()
+        mock_players = Players()
+        s = Go("mocks/triviaset.csv", Game_Record(), mock_players, spy.log)
+
+        mock_connection = Connection()
+        _message = "irrelevant in this instance"
+        with ThreadPoolExecutor(max_workers=2) as e:
+            e.submit(s.run_the_next_trivia_round, mock_connection, _message)
+            e.submit(s.run_the_next_trivia_round, mock_connection, _message)
+
+        round_start_count = 0
+        for message in mock_connection._message_list:
+            if "Round 1" in message:
+                round_start_count += 1
+        self.assertEqual(round_start_count, 1)
