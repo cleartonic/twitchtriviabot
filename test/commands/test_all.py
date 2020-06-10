@@ -27,8 +27,9 @@ class AllCommandsTestCase(unittest.TestCase):
 
 
     def test_commands_returns_a_tuple_with_validations(self):
-        subject = all.commands()
         valid_validations = [ "admin_only" ]
+
+        subject = all.commands()
 
         for command in subject:
             validations = command[2]
@@ -38,6 +39,7 @@ class AllCommandsTestCase(unittest.TestCase):
 
     def test_commands_does_not_contain_name_collisions(self):
         subject = all.commands()
+
         command_messages = []
         unique = []
         for command in subject:

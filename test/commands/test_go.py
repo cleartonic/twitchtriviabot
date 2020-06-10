@@ -10,7 +10,9 @@ from src.commands import Go
 class GoCommandTestCase(unittest.TestCase):
     def test_tuple_returns_the_configured_command_tuple(self):
         subject = Go("mocks/triviaset.csv", Game_Record(), Players())
+
         command = subject.tuple()
+
         self.assertEqual(command[0], "!go")
         self.assertEqual(command[1], subject.run_the_next_trivia_round)
         self.assertEqual(command[2], [ "admin_only" ])
@@ -26,7 +28,7 @@ class GoCommandTestCase(unittest.TestCase):
         winner = mock_players._round_winners[0][0]
         self.assertTrue(winner in mock_connection._message)
 
-    def test_skips_running_the_next_trivia_round_if_theres_an_error(self):
+    def test_go_command_skips_running_the_next_trivia_round_if_theres_an_error(self):
         s = Go("mocks/bad_triviaset.csv", Game_Record(), Players(), dont_print)
 
         mock_connection = Connection()
@@ -35,7 +37,7 @@ class GoCommandTestCase(unittest.TestCase):
 
         self.assertEqual(mock_connection._message, 'No message recieved.')
 
-    def test_logs_if_theres_an_error(self):
+    def test_go_command_logs_if_theres_an_error(self):
         spy = Spy_Log()
         s = Go("mocks/bad_triviaset.csv", Game_Record(), Players(), spy.log)
 
