@@ -1,4 +1,6 @@
 import unittest
+import time
+from concurrent.futures import ThreadPoolExecutor
 from mocks.connection import Connection
 from mocks.socket import socket
 from mocks.time import Time
@@ -204,3 +206,49 @@ class CommanderTestCase(unittest.TestCase):
         s.check_connection_last_message()
 
         self.assertEqual(len(spy._history), 0)
+
+    def chat_messages(self):
+        return [
+            ("VILLAGER_1", "Bread!"),
+            ("VILLAGER_2", "Apples!"),
+            ("VILLAGER_3", "Very small rocks!"),
+            ("VILLAGER_1", "Cider!"),
+            ("VILLAGER_2", "Uhhh, gravy!"),
+            ("VILLAGER_1", "Cherries!"),
+            ("VILLAGER_2", "Mud!"),
+            ("VILLAGER_3", "Churches -- churches!"),
+            ("VILLAGER_2", "Lead -- lead!"),
+            ("Arthur", "A duck.")
+        ]
+
+    def chat(self, connection, response):
+        connection.last_response = response
+        time.sleep(connection.seconds_per_message)
+
+    def close(self, connection):
+        connection.keep_IRC_running = False
+
+    def chat_room(self, connection):
+        for message in self.chat_messages():
+            self.chat(connection, message)
+        self.close(connection)
+
+    def test_commander_can_recieve_commands_from_connection_asynchronously(self):
+        test_responses = self.chat_messages()
+        command_string = test_responses[3][1]
+
+        no_admins = []
+        dont_sleep = Time(dont_print).sleep
+        mock_connection = Connection()
+        spy = Spy_Command()
+        no_validations = []
+        commands = [ (command_string, spy.ping, no_validations) ]
+        s = Subject(commands, no_admins, mock_connection, dont_print, dont_sleep)
+
+        with ThreadPoolExecutor(max_workers=2) as e:
+            e.submit(s.listen_for_commands)
+            e.submit(self.chat_room, mock_connection)
+
+
+        self.assertEqual(spy._history[-1], test_responses[3])
+        self.assertEqual(s.last_response, test_responses[-1])
