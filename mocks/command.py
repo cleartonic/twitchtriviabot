@@ -11,5 +11,5 @@ class Spy_Command():
 
     def long_run(self, _connection, message):
         self.ping(_connection, message)
-        time.sleep(Connection.seconds_per_message * 25)
+        time.sleep(Connection.seconds_per_message * 1000)
         self.ping(_connection, (message[1], "completed"))

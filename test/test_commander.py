@@ -273,12 +273,11 @@ class CommanderTestCase(unittest.TestCase):
         no_admins = []
         dont_sleep = Time(dont_print).sleep
         mock_connection = Connection()
-        long_spy = Spy_Command()
-        short_spy = Spy_Command()
+        spy = Spy_Command()
         no_validations = []
         commands = [
-            (long_command, long_spy.long_run, no_validations),
-            (short_command, short_spy.ping, no_validations),
+            (long_command, spy.long_run, no_validations),
+            (short_command, spy.ping, no_validations),
         ]
         s = Subject(commands, no_admins, mock_connection, dont_print, dont_sleep)
 
@@ -286,8 +285,7 @@ class CommanderTestCase(unittest.TestCase):
             e.submit(s.listen_for_commands)
             e.submit(self.chat_room, mock_connection)
 
-        self.assertEqual(long_spy._history[-2], expected_penultimate_message)
-        self.assertEqual(long_spy._history[-1], (expected_penultimate_message[1], "completed"))
-        self.assertEqual(short_spy._history[-1], expected_last_command_message)
-        self.assertEqual(len(long_spy._history), 2)
-        self.assertEqual(len(short_spy._history), 1)
+        self.assertEqual(spy._history[-3], expected_penultimate_message)
+        self.assertEqual(spy._history[-2], expected_last_command_message)
+        self.assertEqual(spy._history[-1], (expected_penultimate_message[1], "completed"))
+        self.assertEqual(len(spy._history), 3)
