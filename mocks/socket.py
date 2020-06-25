@@ -1,26 +1,34 @@
 from src.configuration import Configuration
+from mocks.silent_log import dont_print
 import random
 
 class socket:
-    def socket():
-        return socket()
+
+    def socket(log = print, message = ""):
+        return socket(log, message)
+
+    def __init__(self, log, message):
+        self.log = log
+        self.message = message
 
     def connect(self, host_port_tuple):
-        print(f'Fake socket connected: {host_port_tuple}')
+        self.log(host_port_tuple)
 
     def send(self, string):
-        print(f'Fake socket was sent: {string}')
+        self.log(string)
 
     def setblocking(self, int):
-        print(f'Fake socket set blocking: {int}')
+        self.log(int)
 
     def recv(self, int):
-        return fake_reception();
+        if self.message == '':
+            return fake_reception();
+        return self.message.encode('utf-8')
 
 class fake_reception:
 
         def decode(fake_reception, encoding):
-            log = fake_reception.dont_print
+            log = dont_print
             config = Configuration('mocks/config.txt', log)
             conn = config.get_connection_constants()
             chan = conn['channel'][1:]
@@ -39,6 +47,3 @@ class fake_reception:
             messages = [channel_message, user_message, user_answer, user_command, admin_command, self_message, ping_message, empty_message]
 
             return random.choice(messages)
-
-        def dont_print(fake_reception, string):
-            pass

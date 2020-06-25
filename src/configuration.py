@@ -7,7 +7,7 @@ class Configuration:
     def abruptly_end_the_app():
         exit()
 
-    def __init__(self, config_file, log):
+    def __init__(self, config_file, log = print):
         self.log = log
         self.log(report.config_loading)
         try:

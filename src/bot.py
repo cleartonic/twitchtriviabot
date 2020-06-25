@@ -1,17 +1,14 @@
 from src.connection import Connection
 from src.commander import Commander
-import time
+from concurrent.futures import ThreadPoolExecutor
 
 class Trivvy:
 
     def __init__(self, connection, commander):
         self.connection = connection
-        self.scan = connection.scan
-        self.message_rate = connection.seconds_per_message
         self.router = commander
 
     def run(self):
-        while self.connection.keep_IRC_running:
-            new_chat_message = self.scan()
-            self.router.respond_to(new_chat_message)
-            time.sleep(self.message_rate)
+        with ThreadPoolExecutor(max_workers=2) as e:
+            e.submit(self.connection.scan_for_messages)
+            e.submit(self.router.listen_for_commands)

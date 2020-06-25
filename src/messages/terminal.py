@@ -12,5 +12,23 @@ class Log:
     connect_failure = 'Connection failed. Check config settings and reload bot.'
     connect_pong = 'pong sent'
 
+
     def connect_response(username, response_body):
         return f'Chat Message From: {username} : {response_body}'
+
+    def question_load_problem(message):
+        one = f'\n\tLuke, we\'ve got a malfunction in fire control...\n\n{message}\n'
+        two = 'Better go fix the triviaset.csv file before trying to shoot this thing off'
+        return one + two
+
+    def bad_admin(username, command):
+        return f"{username} tried to issue a {command} command, but they are not on the admin list."
+
+    def good_admin(username, command):
+        return f"The bot has recieved a {command} command issued by {username}."
+
+    def good_command(username, command):
+        return f"The bot has recieved a non-admin {command} command issued by {username}."
+
+    def in_progress(username, command):
+        return f"{username} issued a {command} command, but that command is already running."
