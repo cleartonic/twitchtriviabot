@@ -97,6 +97,17 @@ class CommanderTestCase(unittest.TestCase):
 
         self.assertEqual(len(spy._history), 0)
 
+    def chat(self, connection, response):
+        connection.last_response = response
+        time.sleep(connection.seconds_per_message)
+
+    def close(self, connection):
+        connection.keep_IRC_running = False
+
+    def chat_and_close(self, connection, message):
+        self.chat(connection, message)
+        self.close(connection)
+
     def test_commander_calls_command_when_an_admin_attempts_an_admin_only_command(self):
         command_string = "!green_group_stay_close_to_homing_sector_MG-7"
         admins = [ "admiral_akbar" ]
@@ -107,8 +118,9 @@ class CommanderTestCase(unittest.TestCase):
         commands = [ (command_string, spy.ping, [ "admin_only" ]) ]
         s = Subject(commands, admins, mock_connection, dont_print, dont_sleep)
 
-        mock_connection.last_response = test_response
-        s.check_connection_last_message()
+        with ThreadPoolExecutor(max_workers=2) as e:
+            e.submit(s.listen_for_commands)
+            e.submit(self.chat_and_close, mock_connection, test_response)
 
         self.assertEqual(spy._history[-1], test_response)
 
@@ -122,8 +134,9 @@ class CommanderTestCase(unittest.TestCase):
         commands = [ (command_string, spy.ping, [ "admin_only" ]) ]
         s = Subject(commands, admins, mock_connection, dont_print, dont_sleep)
 
-        mock_connection.last_response = test_response
-        s.check_connection_last_message()
+        with ThreadPoolExecutor(max_workers=2) as e:
+            e.submit(s.listen_for_commands)
+            e.submit(self.chat_and_close, mock_connection, test_response)
 
         self.assertEqual(spy._history[-1], test_response)
 
@@ -137,8 +150,9 @@ class CommanderTestCase(unittest.TestCase):
         commands = [ (command_string, Spy_Command().ping, [ "admin_only" ]) ]
         s = Subject(commands, admins, mock_connection, spy.log, dont_sleep)
 
-        mock_connection.last_response = test_response
-        s.check_connection_last_message()
+        with ThreadPoolExecutor(max_workers=2) as e:
+            e.submit(s.listen_for_commands)
+            e.submit(self.chat_and_close, mock_connection, test_response)
 
         expected_log = Log.good_admin(admins[0], command_string)
         self.assertEqual(spy._history[-1], expected_log)
@@ -154,8 +168,9 @@ class CommanderTestCase(unittest.TestCase):
         commands = [ (command_string, Spy_Command().ping, no_validations) ]
         s = Subject(commands, no_admins, mock_connection, spy.log, dont_sleep)
 
-        mock_connection.last_response = test_response
-        s.check_connection_last_message()
+        with ThreadPoolExecutor(max_workers=2) as e:
+            e.submit(s.listen_for_commands)
+            e.submit(self.chat_and_close, mock_connection, test_response)
 
         expected_log = Log.good_command(test_response[0], command_string)
         self.assertEqual(spy._history[-1], expected_log)
@@ -171,8 +186,9 @@ class CommanderTestCase(unittest.TestCase):
         commands = [ (command_string, spy.ping, no_validations) ]
         s = Subject(commands, no_admins, mock_connection, dont_print, dont_sleep)
 
-        mock_connection.last_response = test_response
-        s.check_connection_last_message()
+        with ThreadPoolExecutor(max_workers=2) as e:
+            e.submit(s.listen_for_commands)
+            e.submit(self.chat_and_close, mock_connection, test_response)
 
         self.assertEqual(spy._history[-1], test_response)
 
@@ -187,8 +203,9 @@ class CommanderTestCase(unittest.TestCase):
         commands = [ (command_string, spy.ping, no_validations) ]
         s = Subject(commands, no_admins, mock_connection, dont_print, dont_sleep)
 
-        mock_connection.last_response = test_response
-        s.check_connection_last_message()
+        with ThreadPoolExecutor(max_workers=2) as e:
+            e.submit(s.listen_for_commands)
+            e.submit(self.chat_and_close, mock_connection, test_response)
 
         self.assertEqual(len(spy._history), 0)
 
@@ -202,8 +219,9 @@ class CommanderTestCase(unittest.TestCase):
         dont_sleep = Time(dont_print).sleep
         s = Subject(no_commands, admins, mock_connection, spy.log, dont_sleep)
 
-        mock_connection.last_response = test_response
-        s.check_connection_last_message()
+        with ThreadPoolExecutor(max_workers=2) as e:
+            e.submit(s.listen_for_commands)
+            e.submit(self.chat_and_close, mock_connection, test_response)
 
         self.assertEqual(len(spy._history), 0)
 
@@ -220,13 +238,6 @@ class CommanderTestCase(unittest.TestCase):
             ("VILLAGER_2", "Lead -- lead!"),
             ("Arthur", "A duck.")
         ]
-
-    def chat(self, connection, response):
-        connection.last_response = response
-        time.sleep(connection.seconds_per_message)
-
-    def close(self, connection):
-        connection.keep_IRC_running = False
 
     def chat_room(self, connection):
         for message in self.chat_messages():
@@ -249,6 +260,34 @@ class CommanderTestCase(unittest.TestCase):
             e.submit(s.listen_for_commands)
             e.submit(self.chat_room, mock_connection)
 
-
         self.assertEqual(spy._history[-1], test_responses[3])
         self.assertEqual(s.last_response, test_responses[-1])
+
+    def test_commander_can_still_recieve_commands_while_a_long_running_process_runs(self):
+        test_responses = self.chat_messages()
+        expected_penultimate_message = test_responses[0]
+        expected_last_command_message = test_responses[-1]
+        long_command = expected_penultimate_message[1]
+        short_command = expected_last_command_message[1]
+
+        no_admins = []
+        dont_sleep = Time(dont_print).sleep
+        mock_connection = Connection()
+        long_spy = Spy_Command()
+        short_spy = Spy_Command()
+        no_validations = []
+        commands = [
+            (long_command, long_spy.long_run, no_validations),
+            (short_command, short_spy.ping, no_validations),
+        ]
+        s = Subject(commands, no_admins, mock_connection, dont_print, dont_sleep)
+
+        with ThreadPoolExecutor(max_workers=2) as e:
+            e.submit(s.listen_for_commands)
+            e.submit(self.chat_room, mock_connection)
+
+        self.assertEqual(long_spy._history[-2], expected_penultimate_message)
+        self.assertEqual(long_spy._history[-1], (expected_penultimate_message[1], "completed"))
+        self.assertEqual(short_spy._history[-1], expected_last_command_message)
+        self.assertEqual(len(long_spy._history), 2)
+        self.assertEqual(len(short_spy._history), 1)
