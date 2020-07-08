@@ -1,5 +1,5 @@
 class Players():
-    def __init__(self):
+    def __init__(self, filename):
         self.mock_scores = {
             "trivvy_fan": {
                 "round_points": 4,
