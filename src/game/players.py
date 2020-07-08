@@ -20,8 +20,8 @@ class Players():
             self.add_to_board(player)
 
     def up_score(self, player):
-        player['round_points'] += 1
-        player['game_points'] += 1
+        self.mock_scores[player]['round_points'] += 1
+        self.mock_scores[player]['game_points'] += 1
 
     def add_to_board(self, player):
         self.mock_scores[player] = {

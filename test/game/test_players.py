@@ -15,8 +15,19 @@ class PlayersTestCase(unittest.TestCase):
 
         self.assertEqual(s.mock_scores[player], expected)
 
-    def skip_test_players_score_ups_an_existing_players_score(self):
-        pass
+    def test_players_score_ups_an_existing_players_score(self):
+        player = "paul2D2"
+        expected = {
+            "round_points": 2,
+            "game_points": 2,
+            "game_wins": 0
+        }
+        s = Subject()
+
+        s.score(player)
+        s.score(player)
+
+        self.assertEqual(s.mock_scores[player], expected)
 
     def skip_test_players_winner_adds_a_game_win_to_a_player(self):
         pass
