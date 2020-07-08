@@ -1,8 +1,19 @@
 import unittest
+from src.game.players import Players as Subject
 
 class PlayersTestCase(unittest.TestCase):
-    def skip_test_players_score_adds_new_players_to_the_board(self):
-        self.assertEqual(True, True)
+    def test_players_score_adds_new_players_to_the_board(self):
+        player = "paul2D2"
+        expected = {
+            "round_points": 1,
+            "game_points": 1,
+            "game_wins": 0
+        }
+        s = Subject()
+
+        s.score(player)
+
+        self.assertEqual(s.mock_scores[player], expected)
 
     def skip_test_players_score_ups_an_existing_players_score(self):
         pass
