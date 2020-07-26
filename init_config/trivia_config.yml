@@ -5,5 +5,9 @@ hint_time2: 20
 skip_time: 30
 question_delay: 5
 question_bonusvalue: 3
-mode: poll2
+mode: single
+music_mode: false
+order: random
+length: finite
 admins: admin
+output: true
