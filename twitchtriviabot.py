@@ -864,6 +864,8 @@ class Session(object):
             except:
                 logging.debug("Error on calling next question, ending trivia...")
                 self.force_end_of_trivia()
+        self.write_question_variable()
+
 
     def question_answered(self, user, answer_slot=None):
         if self.session_config['mode'] == 'single':
@@ -896,6 +898,22 @@ class Session(object):
         if str(self.session_config['output']).lower() == 'true' or self.session_config['output'] == True:
             self.output_session_variables()
             
+        self.clear_question_variable()
+            
+    def write_question_variable(self):
+        try:
+            with open(os.path.join(THIS_FILEPATH,'config','scores','question.txt'),'w') as f:
+                f.write(self.active_question.question_string)        
+        except:
+            logging.error("Error on write question to file")
+
+    def clear_question_variable(self):
+        try:
+            with open(os.path.join(THIS_FILEPATH,'config','scores','question.txt'),'w') as f:
+                f.write("")      
+        except:
+            logging.error("Error on write question to file")
+            
     def output_session_variables(self):
         try:
             user_dict = {}
@@ -915,6 +933,8 @@ class Session(object):
                     return_str += '%s: %s\n' % (k,v)
                 with open(os.path.join(THIS_FILEPATH,'config','scores','scoreboard.txt'),'w') as f:
                     f.write(return_str)
+
+
         except:
             logging.debug("Error on output session variables method (score txt files) %s" % traceback.print_exc())
 
@@ -960,6 +980,7 @@ class Session(object):
         self.check_end_of_trivia(end_trivia_flag=True)
     def check_end_of_trivia(self, end_trivia_flag = False):
         if (self.questionno > self.question_count and self.trivia_active) or end_trivia_flag:
+            self.write_question_variable()
             logging.debug("Ending trivia...")
             self.trivia_active = False
             self.find_winner()
