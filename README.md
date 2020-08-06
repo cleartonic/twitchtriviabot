@@ -1,4 +1,4 @@
-# Twitch Trivia Bot [![Build Status](https://travis-ci.com/IanDCarroll/Trivvy.svg?branch=master)](https://travis-ci.com/IanDCarroll/Trivvy)
+# Twitch Trivia Bot [![Build Status](https://travis-ci.com/Coding-Koans/Trivvy.svg?branch=master)](https://travis-ci.com/Coding-Koans/Trivvy)
 
 trivia bot modified for [Outpost 13](https://www.twitch.tv/outpost13)
 
