@@ -12,13 +12,13 @@ import pickle
 import random
 import re
 import shutil
-import socket
 import sys
 import time
 import traceback
 import yaml
 
 from collections import Counter 
+from twitchtriviabot.chatbot import ChatBot
 
 from PyQt5.QtWidgets import QLabel, QFrame, QLineEdit, QPushButton, QCheckBox, QApplication, QMainWindow, \
                             QFileDialog, QDialog, QScrollArea, QMessageBox, QWidget, QTextEdit
@@ -41,8 +41,6 @@ logging.basicConfig(format='%(asctime)s %(message)s',
                 level=logging.DEBUG)
 
 VERSION_NUM = "2.1.0"
-# INFO_MESSAGE = 'Twitch Trivia Bot loaded. Version %s. Developed by cleartonic. %s' % (VERSION_NUM, random.randint(0,10000))
-INFO_MESSAGE = 'Twitch Trivia Bot loaded.'
 
 AUTH_CONFIG_PATH=os.path.abspath(os.path.join(THIS_FILEPATH,'config','auth_config.yml'))
 TRIVIA_CONFIG_PATH=os.path.abspath(os.path.join(THIS_FILEPATH,'config','trivia_config.yml'))
@@ -1394,74 +1392,6 @@ class User(object):
         else:
             return False
 
-
-class ChatBot(object):
-    '''
-    ChatBot is solely responsible for sending and reporting messages
-    '''
-    def __init__(self, auth_config):
-        self.infomessage = INFO_MESSAGE
-        try:
-            self.valid = True
-            self.bot_config = auth_config
-            try:
-                self.s = socket.socket()
-                self.s.connect((self.bot_config['host'], self.bot_config['port']))
-                self.s.send("PASS {}\r\n".format(self.bot_config['pass']).encode("utf-8"))
-                self.s.send("NICK {}\r\n".format(self.bot_config['nick']).encode("utf-8"))
-                self.s.send("JOIN #{}\r\n".format(self.bot_config['chan']).encode("utf-8"))
-                time.sleep(1)
-                self.send_message(self.infomessage)
-                self.s.setblocking(0)
-            except:
-                self.s = socket.socket()
-                self.s.connect((self.bot_config['host'], self.bot_config['port']))
-                self.s.send("PASS {}\r\n".format(self.bot_config['pass']).encode("utf-8"))
-                self.s.send("NICK {}\r\n".format(self.bot_config['nick']).encode("utf-8"))
-                self.s.send("JOIN #{}\r\n".format(self.bot_config['chan'].lower()).encode("utf-8"))
-                time.sleep(1)
-                self.send_message(self.infomessage)
-                self.s.setblocking(0)       
-        except Exception as e:
-            logging.debug("Connection failed. Check config settings and reload bot.\nError code:\n%s" % str(e))
-            self.valid = False
-        logging.debug("Finished setting up Chat Bot.")
-        
-    ### Chat message sender func
-    def send_message(self, msg):
-        answermsg = ":"+self.bot_config['nick']+"!"+self.bot_config['nick']+"@"+self.bot_config['nick']+".tmi.twitch.tv PRIVMSG #"+self.bot_config['chan']+" : "+msg+"\r\n"
-        if 'iso' in self.bot_config['encoding'].lower():
-            answermsg2 = answermsg.encode(self.bot_config['encoding'])
-        else:
-            answermsg2 = answermsg.encode("utf-8")
-        self.s.send(answermsg2)
-        
-    def retrieve_messages(self):
-        username, message, cleanmessage = None, None, None
-        try:
-            response = self.s.recv(1024).decode("utf-8")
-#            logging.debug("Response:\n%s" % response)
-            if response == "PING :tmi.twitch.tv\r\n":
-                self.s.send("PONG :tmi.twitch.tv\r\n".encode("utf-8"))
-                logging.debug("Pong sent")
-            else:
-                username = re.search(r"\w+", response).group(0) 
-                if username == self.bot_config['nick']:  # Ignore this bot's messages
-                    pass
-                else:
-                    message = re.compile(r"^:\w+!\w+@\w+\.tmi\.twitch\.tv PRIVMSG #\w+ :").sub("", response)
-                    cleanmessage = re.sub(r"\s +", "", message, flags=re.UNICODE).replace("\n","").replace("\r","")
-                    
-#                    logging.debug("USER RESPONSE: " + username + " : " + message)
-#                    if cleanmessage in var.COMMANDLIST:
-#                        logging.debug("Command recognized.")
-#                        trivia_commandswitch(cleanmessage,username)
-#                        time.sleep(1)
-        except: 
-#            logging.debug(traceback.print_exc())
-            
-            pass
-        return username, message, cleanmessage
     
 if __name__ == '__main__':
     main_window = MainWindow()
