@@ -15,7 +15,9 @@ Twitch Trivia Bot (TTB) is a Python script to run a trivia session in Twitch cha
 # Setup
 The latest Python 3 install is required for this bot. You will need to install Python 3 to be able to run. One can either use standard Python 3 distribution with IDLE, or use something like the Anaconda distribution with Spyder (what I use). 
 
-You will likely need to install a few dependencies, including `PyYaml` and `PyQt5`. You can do this via command line `pip install [x]` or `pip3 install [x]` (e.g. "pip install PyYaml"). On your first few runs if the program/GUI does not load, make sure to check `config/output_log.log` to read the error codes to identify what needs to be installed. 
+If you are developing this project, it is recommended a virtual environment. You can do this with a command like `python -m virtualenv venv/{name_your_environment}`. Then, when working, use `source venv/{environment_name}/bin/activate` to enter the environment. Do this before pip commands or running the bot.
+
+You will likely need to install a few dependencies, including `PyYaml` and `PyQt5`. You can do this via command line `pip install -r requirements.txt` or `pip3 install -r requirements.txt`. On your first few runs if the program/GUI does not load, make sure to check `config/output_log.log` to read the error codes to identify what needs to be installed. 
 
 Please use the [latest Release](/releases/latest/) download for initial install. 
 
