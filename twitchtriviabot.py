@@ -2,19 +2,21 @@
 """
 @author: cleartonic
 """
-import random
-import json
-import csv
 import copy
-import yaml
-import collections
-import traceback
+import csv
 import datetime
-import time
-import pickle
-import socket
-import re, logging, sys
+import json
+import logging
 import os
+import pickle
+import random
+import re
+import socket
+import sys
+import time
+import traceback
+import yaml
+
 from collections import Counter 
 
 from PyQt5.QtWidgets import QLabel, QFrame, QLineEdit, QPushButton, QCheckBox, QApplication, QMainWindow, \
