@@ -11,6 +11,7 @@ import os
 import pickle
 import random
 import re
+import shutil
 import socket
 import sys
 import time
@@ -43,8 +44,19 @@ VERSION_NUM = "2.1.0"
 # INFO_MESSAGE = 'Twitch Trivia Bot loaded. Version %s. Developed by cleartonic. %s' % (VERSION_NUM, random.randint(0,10000))
 INFO_MESSAGE = 'Twitch Trivia Bot loaded.'
 
+AUTH_CONFIG_PATH=os.path.abspath(os.path.join(THIS_FILEPATH,'config','auth_config.yml'))
+TRIVIA_CONFIG_PATH=os.path.abspath(os.path.join(THIS_FILEPATH,'config','trivia_config.yml'))
+
 if not os.path.exists(os.path.abspath(os.path.join(THIS_FILEPATH,'config'))):
     os.makedirs(os.path.abspath(os.path.join(THIS_FILEPATH,'config')))
+if not os.path.exists(AUTH_CONFIG_PATH):
+    shutil.copyfile(
+        os.path.abspath(os.path.join(THIS_FILEPATH,'init_config','auth_config.yml')),
+        AUTH_CONFIG_PATH)
+if not os.path.exists(TRIVIA_CONFIG_PATH):
+    shutil.copyfile(
+        os.path.abspath(os.path.join(THIS_FILEPATH,'init_config','trivia_config.yml')),
+        TRIVIA_CONFIG_PATH)
 if not os.path.exists(os.path.abspath(os.path.join(THIS_FILEPATH,'config','scores'))):
     os.makedirs(os.path.abspath(os.path.join(THIS_FILEPATH,'config','scores')))
 if not os.path.exists(os.path.abspath(os.path.join(THIS_FILEPATH,'config','music'))):
