@@ -1,8 +1,7 @@
-from .messages import Log as report
+from src.messages import Log as report
 import configparser
 
 class Configuration:
-    COMMANDLIST = ["!triviastart","!triviaend","!top3","!hint","!bonus","!score","!next","!stop","!loadconfig","!backuptrivia","!loadtrivia","!creator"]
 
     def abruptly_end_the_app():
         exit()
