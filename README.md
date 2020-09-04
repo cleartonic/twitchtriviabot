@@ -7,7 +7,7 @@ This assumes no development or shell experience. Use your own way if you have op
 
 ### First-time install:
 
- - Follow this link to [Install Atom](https://atom.io/)
+ - Follow this link to [Install Atom](https://atom.io/) or skip and use the editor of your choice
 
  - Join [GitHub](https://github.com/join)
 
@@ -45,7 +45,7 @@ This assumes no development or shell experience. Use your own way if you have op
  - `mkdir TwitchBots`
  ###### Clone this repo
  - `cd TwitchBots`
- - `git clone https://github.com/IanDCarroll/twitchtriviabot.git`
+ - `git clone git@github.com:Coding-Koans/Trivvy.git`
  - Give yourself a high five you're installed!
 
 ### Getting updates:
@@ -57,40 +57,44 @@ This assumes no development or shell experience. Use your own way if you have op
  - MacOS in terminal: `python -m unittest discover`
  - Windows in Powershell: `py -m unittest discover`
 
+### Bot Dry Run
+
+ - `cd TwitchBots/Trivvy`
+ - macOS: `python Trivvy.py --dry-run`
+ - Windows Powershell: `py Trivvy.py --dry-run`
+
 ### Running the Bot on Twitch:
 
- - `cd TwitchBots/twitchtriviabot`
+ - `cd TwitchBots/Trivvy`
  - `atom config.txt`
    - modify these configuration settings so it can log on
-
    ```
    [Admin Settings]
-   admins = <A_TWITCH_ACCOUNT_USERNAME_WHO_WILL_CONTROL_THE_BOT>
+   admins = <A_TWITCH_ACCOUNT_USERNAME_WHO_WILL_CONTROL_THE_BOT>(can do multiple admins as a comma-separated list with no spaces)
 
    [Bot Settings]
    host = irc.twitch.tv
    port = 6667
    nick = <A_TWITCH_ACCOUNT_USERNAME_THE_BOT_WILL_USE>
    pass = oauth:1awesomerandompassofthislength
-   chan = #<THE_CHANNEL_THE_BOT_WILL_RUN_ON>
+   chan = <THE_CHANNEL_THE_BOT_WILL_RUN_ON>
    ```
    - Save via `<CMND> s`
-   - Note: `chan` needs a `#` in front of the name as shown.
    - Also Note: you need to be logged in to twitch under the bot's name to get a pass.
    - Also Also Note: You can [get that pass (oauth token) from here](https://twitchapps.com/tmi/).
-   - Also Also Also Note: usernames must be typed into the config in all lower case (and be spelled correctly!)
+   - Also Also Also Note: usernames must be be spelled correctly!
    - Alos Also Alos Also Note: Atom doesn't auto-save by default - Make sure to save via `<CMND> s`
    - Finally Note: oauth passes expire. You'll need a new one from time to time.
 
- - MacoOS in terminal: `python twitchtriviabot.py`
- - Windows in Powershell: `py twitchtriviabot.py` (Git Bash doesn't show print statements in real-time)
+ - MacoOS in terminal: `python Trivvy.py --go-live`
+ - Windows in Powershell: `py Trivvy.py --go-live` (Git Bash doesn't show print statements in real-time)
  - You should see the terminal giving you info on what the bot sees from chat, and you should also see a logged-in message in chat from the bot.
 
-### Common admin chat commands:
+### Admin chat commands:
 
-- `!triviastart` - starts trivia
-- `!stop` - kills the bot's connection to twitch, and stops trivia
+- `!go` - starts trivia
+- `!stop` - kills the bot's connection to twitch, and pauses trivia
 
 ### Stopping the Bot:
 
- - in the terminal, type `<CTRL> c`
+ - in the terminal, type `<CTRL> c <CTRL> c` You will see a bunch of stack traces. That's normal for now.

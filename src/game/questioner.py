@@ -1,6 +1,6 @@
 import re
 import random
-from src.mr_clean import Mr
+from src.helpful.mr_clean import Mr
 from src.messages import Chat
 import time
 

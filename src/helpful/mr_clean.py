@@ -6,3 +6,7 @@ class Mr:
 
     def lower(message):
         return message.lower()
+
+    def title(message):
+        spaced_message = message.replace("-", " ").replace("_", " ").strip()
+        return spaced_message.title()
