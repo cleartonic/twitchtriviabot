@@ -1,6 +1,6 @@
 import time
 import threading
-from src.mr_clean import Mr
+from src.helpful.mr_clean import Mr
 from src.messages import Log as report
 
 class Commander:

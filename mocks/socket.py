@@ -1,4 +1,4 @@
-from src.configuration import Configuration
+from src.startup.configuration import Configuration
 from mocks.silent_log import dont_print
 import random
 
