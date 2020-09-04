@@ -3,9 +3,9 @@ from src.configuration import Configuration
 from src.connection import Connection
 from src.commander import Commander
 from src.commands import all
-import socket
+from mocks import socket
 
-configFile = 'config.txt'
+configFile = 'mocks/config.txt'
 config = Configuration(configFile)
 socket = socket.socket()
 connect_to = config.get_connection_constants()
