@@ -1,6 +1,6 @@
-# Twitch Trivia Bot [![Build Status](https://travis-ci.com/Coding-Koans/Trivvy.svg?branch=master)](https://travis-ci.com/Coding-Koans/Trivvy)
+# Trivvy [![Build Status](https://travis-ci.com/Coding-Koans/Trivvy.svg?branch=master)](https://travis-ci.com/Coding-Koans/Trivvy)
 
-trivia bot modified for [Outpost 13](https://www.twitch.tv/outpost13)
+trivia bot for [Outpost 13](https://www.twitch.tv/outpost13)
 
 ## Instructions for Channel Admins and Mods
 This assumes no development or shell experience. Use your own way if you have opinions and preferences.
