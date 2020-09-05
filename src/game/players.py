@@ -1,51 +1,51 @@
+import os
+
 class Players():
     def __init__(self, filename):
         self.filename = f"{filename}.txt"
-        self.mock_scores = {
-            "trivvy_fan": {
-                "round_points": 4,
-                "game_points": 4,
-                "game_wins": 2
-            },
-            "happy_lass": {
-                "round_points": 6,
-                "game_points": 12,
-                "game_wins": 5
-            }
-        }
+        self.cache = None
+        self.scores = self.get_scores_from_FS()
 
     def score(self, player):
-        if player in self.mock_scores.keys():
+        self.get_scores()
+        if player in self.scores.keys():
             self.up_score(player)
         else:
             self.add_to_board(player)
+        self.save_scores()
 
     def up_score(self, player):
-        self.mock_scores[player]['round_points'] += 1
-        self.mock_scores[player]['game_points'] += 1
+        self.scores[player]['round_points'] += 1
+        self.scores[player]['game_points'] += 1
 
     def add_to_board(self, player):
-        self.mock_scores[player] = {
+        self.scores[player] = {
             "round_points": 1,
             "game_points": 1,
             "game_wins": 0
         }
 
-    def score_winners(self):
-        players = self.game_winners()
-        for player in players:
-            if player in self.mock_scores.keys():
-                self.mock_scores[player]["game_wins"] += 1
+    def score_winners(self, winners):
+        self.get_scores()
+        for player in winners:
+            # pretty sure it's impossible for someone to win and not be on the board
+            if player in self.scores.keys(): 
+                self.scores[player]["game_wins"] += 1
+        self.save_scores()
 
     def reset_scores_for_next_round(self):
+        self.get_scores()
         self.reset("round_points")
+        self.save_scores()
 
     def reset_scores_for_next_game(self):
+        self.get_scores()
         self.reset("round_points")
         self.reset("game_points")
+        self.save_scores()
 
     def reset(self, thing_to_be_reset):
-        for score in self.mock_scores.values():
+        for score in self.scores.values():
             score[thing_to_be_reset] = 0
 
     def round_winners(self):
@@ -56,3 +56,39 @@ class Players():
 
     def top_players(self):
         pass
+
+
+    def get_scores(self):
+        self.scores = self.get_scores_from_FS()
+
+    def save_scores(self):
+        self.overwrite_scores_to_FS()
+
+    def get_scores_from_FS(self):
+        blank_scores = {}
+        if self.cache or self.cache == blank_scores:
+            return self.cache
+
+        if os.path.exists(self.filename):
+            return self.read_from_existing_record()
+
+        self.scores = blank_scores
+        self.save_scores()
+        self.cache = blank_scores
+        return blank_scores
+
+    def read_from_existing_record(self):
+        file = open(self.filename)
+        scores = eval(file.read())
+        self.cache = scores
+        file.close()
+        return scores
+
+    def overwrite_scores_to_FS(self):
+        file = open(self.filename, "wt")
+        file.write(str(self.scores))
+        self.clear_score_cache()
+        file.close()
+
+    def clear_score_cache(self):
+        self.cache = None
