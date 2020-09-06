@@ -1,6 +1,4 @@
 from src.game.triviaset import Trivia_Set
-from mocks.game.game_record import Game_Record
-from mocks.game.players import Players
 from src.game.game import Game
 from src.messages import Log as report
 
