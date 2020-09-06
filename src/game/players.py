@@ -55,8 +55,14 @@ class Players():
         pass
 
     def top_players(self):
-        pass
+        return self.top_3_by("game_wins")
 
+    def top_3_by(self, point_type):
+        player_tuples = []
+        for player, record in self.scores.items():
+            player_tuples.append((player, record[point_type]))
+        sorted_players = sorted(player_tuples, key=lambda player: player[1], reverse=True)
+        return sorted_players[:3]
 
     def get_scores(self):
         self.scores = self.get_scores_from_FS()
