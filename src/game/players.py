@@ -49,10 +49,10 @@ class Players():
             score[thing_to_be_reset] = 0
 
     def round_winners(self):
-        pass
+        return self.top_3_by("round_points")
 
     def game_winners(self):
-        pass
+        return self.top_3_by("game_points")
 
     def top_players(self):
         return self.top_3_by("game_wins")
@@ -60,7 +60,8 @@ class Players():
     def top_3_by(self, point_type):
         player_tuples = []
         for player, record in self.scores.items():
-            player_tuples.append((player, record[point_type]))
+            if record[point_type] > 0:
+                player_tuples.append((player, record[point_type]))
         sorted_players = sorted(player_tuples, key=lambda player: player[1], reverse=True)
         return sorted_players[:3]
 
