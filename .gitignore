@@ -1,4 +1,5 @@
 userscores.txt
 __pycache__
 config.txt
+player_scores.txt
 *.pyc

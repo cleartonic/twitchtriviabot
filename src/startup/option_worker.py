@@ -1,5 +1,4 @@
 from src.messages import Log as report
-from src.helpful.mr_clean import Mr
 from mocks import socket as mock_socket
 import socket as real_socket
 import getopt
@@ -62,9 +61,4 @@ class Option_Worker():
 
     def log_and_exit(self):
         self.log(report.log_options(long_options))       
-        sys.exit()      
-
-    def log_options(self):
-        for option in long_options:
-            self.log(f"\t{Mr.title(option)}:\tTrivvy.py --{option}")
-        self.log("")
+        sys.exit()
