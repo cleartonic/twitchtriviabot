@@ -1,9 +1,12 @@
 class Game_Record():
     def __init__(self):
-        pass
+        self._log = []
 
     def log(self, question):
-        pass
+        self._log.append(question)
 
     def clear_game(self):
-        pass
+        self._log = []
+
+    def logged_questions(self):
+        return self._log
