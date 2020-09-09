@@ -36,6 +36,7 @@ A trivia set file (csv) needs to be set up (more on this below). Default with th
         + Functionally, the admin would prepare these artist/track files, start playing the song for their audience, then press "Start Q" when everything is ready. Answers come in, and when the question is done scoring, the system will wait until the admin chooses to start the next song
         + In the config file, mode `poll2` and length `infinite` must be selected for music_mode `true`
     + order = `random` or `ordered`. This allows the questions to be answered in order of the original trivia set, or to be chosen randomly. If `ordered` is chosen, likely it is advised to set `question_count` equal to the number of questions in the trivia set, which will yield all questions in order. 
+    + category_distribution = `random` or `distributed`. After the full trivia csv file is loaded, this will decide how to cull down the full set into the desired `question_count` number of questions. `random` will randomly choose the questions, regardless of category. `distributed` will attempt to distribute the categories of questions semi-evenly, meaning that both a sampling method for culling the full set is used, and then averages per category are checked to ensure a decently distributed final trivia session set. 
     + length = `finite` or `infinite`. When using `infinite`, questions will never stop being asked until the admin chooses to end trivia. Questions are not reshuffled - they will continually be reasked in the same order. `finite` ends trivia after the `question_count` defined above
     + admins - separate by commas
         + E.g., admins = player
@@ -49,10 +50,10 @@ A trivia set file (csv) needs to be set up (more on this below). Default with th
     + encoding = either `utf-8` or `ISO-8859-1`. Somewhat experimental, default to `utf-8` for safety
 
 To set up triviaset.csv properly, consider the following:
-5 headers in this release are specified: ‘category, ‘question’, ‘answer’, ‘answer2’, ‘creator’. Keep them in this order.
-Fill out row by row each question, filling in topic/game, and at least 1 Answer column. Creator is not required. 
+5 headers in this release are specified: ‘category, ‘question’, ‘answer’, ‘answer2’, ‘creator’. Keep them in this order, but your trivia set does not need to keep the column header. 
+Fill out row by row each question, filling in topic/game, and at least 1 Answer column. Creator and Answer2 are not required fields. 
 
-A log will be saved per run to `config/output_log.log`. This will accumulate over time, and is useful for debugging problems. At any point, you can delete this file if it becomes too large. 
+A log will be saved per run to `config/output_log.log`. This will accumulate over time, and is useful for debugging problems. At any point, you can delete the log file if it becomes too large. 
 
 # Running the bot
 
@@ -67,21 +68,21 @@ If you need to close the GUI and stop the program, usually holding Ctrl+C will k
 
 ### Hints and question timing 
 
-All timings can be manually adjusted in config.txt. By default, after a question is asked, automatically generated hints will trigger (specified by trivia_config.yml). Later, the question will be skipped. After the specified session question limit is hit, the game will end, and a winner will be assigned. 
+All timings can be manually adjusted in trivia_config.yml. By default, after a question is asked, automatically generated hints will trigger (specified by trivia_config.yml). Later, the question will be skipped. After the specified session question limit is hit, the game will end, and a winner will be assigned. 
 + The first hint replaces 2 out of 3 characters in the answer with “_”
 + The second hint replaces all vowels with “_”
 
 ### BONUS
 
-Bonus can be activated by an admin via !bonus command. Bonus mode makes questions worth more points, default 3 points (configurable in config.txt). Can be toggled on/off at any time. 
+Bonus can be activated by an admin via !bonus command. Bonus mode makes questions worth more points, default 3 points (configurable in trivia_config.yml). Can be toggled on/off at any time. 
 
 # Commands
 The GUI and these commands below will yield the same results. Some commands are available only during active trivia sessions.
 
 #### Admin only:
-+ !triviastart - Begins a new trivia round with conditions specified in ‘config.txt’
++ !triviastart - Begins a new trivia round with conditions specified in ‘trivia_config.yml’
 + !triviaend - Ends the trivia round & assigns a win. 
-+ !next/!skip - Skips to the next question. All questions will automatically lapse after enough time specified in ‘config.txt’, but this allows for manually skipping.
++ !next/!skip - Skips to the next question. All questions will automatically lapse after enough time specified in ‘trivia_config.yml’, but this allows for manually skipping.
 + !bonus - Switches questions to bonus mode (toggle on/off)
 + !stopbot - Severs the bot connection. 
 
@@ -89,4 +90,6 @@ The GUI and these commands below will yield the same results. Some commands are 
 + !score - Reports user’s score (reports session score, total score for all trivia, and total wins for all trivia)
 
 # Credits
+Created by [@cleartonic][https://twitter.com/cleartonic]
+
 Thanks to cormac-obrien’s publicly available instructions to navigate Twitch's IRC API via Python & socket, which was used in various forms within this release (http://www.instructables.com/id/Twitchtv-Moderator-Bot/)

@@ -8,6 +8,7 @@ question_bonusvalue: 3
 mode: single
 music_mode: false
 order: random
+category_distribution: random
 length: finite
 admins: admin
 output: true

@@ -6,3 +6,4 @@ build/*
 venv/*
 twitchtriviabot.spec
 setup.py
+temp.pickle

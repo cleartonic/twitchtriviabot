@@ -3,3 +3,4 @@ port: 6667
 nick: bot_name
 pass: oauth:xxx
 chan: channel_to_connect_to
+encoding: utf-8

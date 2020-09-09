@@ -37,7 +37,7 @@ logging.basicConfig(format='%(asctime)s %(message)s',
                 filemode='a',
                 level=logging.DEBUG)
 
-VERSION_NUM = "2.1.0"
+VERSION_NUM = "2.2.0"
 # INFO_MESSAGE = 'Twitch Trivia Bot loaded. Version %s. Developed by cleartonic. %s' % (VERSION_NUM, random.randint(0,10000))
 INFO_MESSAGE = 'Twitch Trivia Bot loaded.'
 
@@ -419,10 +419,10 @@ class TriviaBot(object):
         self.trivia_active = False
         self.error_msg = ""
         self.active_session = NullSession()
-        with open(os.path.join('config','trivia_config.yml'),'r') as f:
+        with open(os.path.join(THIS_FILEPATH,'config','trivia_config.yml'),'r') as f:
             temp_config = yaml.safe_load(f)
             self.validate_trivia_config(temp_config)
-        with open(os.path.join('config','auth_config.yml'),'r') as f:
+        with open(os.path.join(THIS_FILEPATH,'config','auth_config.yml'),'r') as f:
             temp_config = yaml.safe_load(f)
             self.validate_auth_config(temp_config)
             
@@ -534,15 +534,18 @@ class TriviaBot(object):
             
             # setup
             try:
-                if self.trivia_config['length'] == 'infinite':
-                    self.cb.send_message("Trivia has begun! Infinite question mode. Trivia will start in %s seconds." % (self.active_session.session_config['question_delay']))
-                else:
-                    self.cb.send_message("Trivia has begun! Question Count: %s. Trivia will start in %s seconds." % (self.active_session.question_count, self.active_session.session_config['question_delay']))
-                time.sleep(self.active_session.session_config['question_delay'])
-                # get first question, ask, then begin loop
-                self.active_session.trivia_active = True
-                self.trivia_active = True
-                self.active_session.call_question()
+                if self.active_session.question_count < 1:
+                    self.cb.send_message("No questions were loaded. Check log for issue reporting and restart the trivia bot.")
+                else:                    
+                    if self.trivia_config['length'] == 'infinite':
+                        self.cb.send_message("Trivia has begun! Infinite question mode. Trivia will start in %s seconds." % (self.active_session.session_config['question_delay']))
+                    else:
+                        self.cb.send_message("Trivia has begun! Question Count: %s. Trivia will start in %s seconds." % (self.active_session.question_count, self.active_session.session_config['question_delay']))
+                    time.sleep(self.active_session.session_config['question_delay'])
+                    # get first question, ask, then begin loop
+                    self.active_session.trivia_active = True
+                    self.trivia_active = True
+                    self.active_session.call_question()
         
             except:
                 logging.debug("Error on session %s" % traceback.print_exc())
@@ -774,13 +777,21 @@ class Session(object):
             else:
                 logging.debug("Loading trivia data...")
                 
-                with open(os.path.join('config',self.session_config['file_name']),'r') as f:
+                with open(os.path.join(THIS_FILEPATH,'config',self.session_config['file_name']),'r') as f:
                     data = f.read()            
                 data = csv.reader(data.splitlines(),quotechar='"', delimiter=',',quoting=csv.QUOTE_ALL, skipinitialspace=True)
                 self.ts = {}
                 for idx, i in enumerate(data):
-                    category, question, answer, answer2, creator = i
-                    self.ts[idx] = {'category':category, 'question':question, 'answer':answer,'answer2':answer2,'creator':creator}
+                    try:
+                        category, question, answer, answer2, creator = i
+                        if answer != '' and category != '' and question != '':
+                            self.ts[idx] = {'category':category, 'question':question, 'answer':answer,'answer2':answer2,'creator':creator}
+                        elif question.lower() != 'question':
+                            logging.debug("Data line was ignored for csv header")
+                        else:
+                            logging.debug("Data line was ignored, make sure category, question and answer are non null fields: %s" % i)
+                    except:
+                        logging.debug("Error on data line, check number of fields: %s" % i)
     
                 if self.session_config['mode'] == 'poll2':
                     logging.debug("Mode set to poll2, only taking questions with valid answer/answer2...")
@@ -791,31 +802,34 @@ class Session(object):
                     self.ts = new_ts
                 
                 self.tsrows = len(self.ts.keys())
-    
+                
                 if self.tsrows < self.session_config['question_count']:
                     self.session_config['question_count'] = int(self.tsrows)
                     logging.debug("Warning: Trivia questions for session exceeds trivia set's population. Setting session equal to max questions.")
     
     
                 logging.debug("Creating session set data. Population %s, session %s" % (self.tsrows, self.session_config['question_count']))
-                chosen_idx = random.sample(list(self.ts.keys()), int(self.session_config['question_count']))
-                if self.session_config['order'] == 'ordered':
-                    chosen_idx.sort()
-                self.ss = {}
-                for i in chosen_idx:
-                    self.ss[i] = self.ts[i]
+
+                if self.session_config['category_distribution'] == 'random':
+                    self.create_random_trivia_set()
+                elif self.session_config['category_distribution'] == 'distributed':
+                    self.create_distributed_trivia_set()
                 try:
     
                     for k, v in self.ss.items():
-                        self.questions.append(Question(v, self.session_config))
+                        try:
+                            self.questions.append(Question(v, self.session_config))
+                        except Exception as e:
+                            logging.debug("Error %s -> %s on question creation: %s" % (k,v,e))
                 except Exception as e:
                     logging.debug("Error %s on question creation" % e)
                 if self.session_config['length'] == 'infinite':
-                    self.question_count = 99999
+                    self.question_count = 999999
                 else:
                     self.question_count = len(self.questions)
     
                 logging.debug("Finished setting up Session.")
+                
         except Exception as e:
             logging.debug("Error on data load. Check trivia set and make sure file_name matches in config, and that file matches columns/headers correctly\nError code:\n>> %s" % e)
             self.valid = False
@@ -826,6 +840,85 @@ class Session(object):
             for i in ['1_place_username','1_place_score','2_place_username','2_place_score','3_place_username','3_place_score','scoreboard']:
                 with open(os.path.join(THIS_FILEPATH,'config','scores','%s.txt' % i),'w') as f:
                     f.write('')
+
+    def create_random_trivia_set(self):
+        chosen_idx = random.sample(list(self.ts.keys()), int(self.session_config['question_count']))
+        if self.session_config['order'] == 'ordered':
+            chosen_idx.sort()
+        self.ss = {}
+        for i in chosen_idx:
+            self.ss[i] = self.ts[i]
+    def create_distributed_trivia_set(self):
+    
+        # with open('temp.pickle','rb') as p:
+        #     data = pickle.load(p)
+        
+        # determine how much to first sample the data 
+        data = self.ts
+        data_len = len(data)
+        question_count = self.session_config['question_count']
+        order = self.session_config['order']
+        
+        if (question_count / data_len) < .3:
+            first_sample = int(data_len / 3)
+        elif (question_count / data_len) < .5:
+            first_sample = int(data_len / 2)
+        if first_sample < question_count:
+           first_sample = question_count
+    
+    
+    
+    
+        data_set = {}        
+        category_counts = {}
+        # first initialize each category for 0 count
+        
+        def report_mean(c):
+            return float(sum(c.values()) / len(c.values()))
+    
+            
+        # create first sampled set 
+        data_set_sample1 = {}
+        chosen_idx = random.sample(list(data.keys()), int(first_sample))
+        if order == 'ordered':
+            chosen_idx.sort()
+        for i in chosen_idx:
+            data_set_sample1[i] = data[i]
+        
+    
+        for k, v in data_set_sample1.items():
+            category_counts[v['category']] = 0
+            
+        for k, v in data_set_sample1.items():
+            # get category_count
+            if category_counts[v['category']] <= report_mean(category_counts) or category_counts[v['category']] == 0:
+                print("adding category %s" % v['category'])
+                data_set[k] = v
+                category_counts[v['category']] = category_counts[v['category']] + 1
+
+        # final shuffle
+        data_set_final = {}
+        data_set_keys = list(data_set.keys())
+        data_set_keys = random.sample(data_set_keys,int(self.session_config['question_count']))
+        
+        for i in data_set_keys:
+            data_set_final[i] = data_set[i]
+      
+
+        
+        self.ss = data_set_final
+        logging.debug("Category counts breakdown:")
+        for k, v in category_counts.items():
+            logging.debug("%s %s" % ("{:50}".format("%s:" % k), v))
+
+
+
+
+
+
+
+
+
 
     def call_current_time(self):
         return datetime.datetime.now()
@@ -1453,3 +1546,48 @@ if __name__ == '__main__':
     main_window = MainWindow()
     main_window.window.show()
     main_window.app.exec_()
+
+    # with open('temp.pickle','rb') as p:
+    #     data = pickle.load(p)
+    
+    # # determine how much to first sample the data 
+    # data_len = len(data)
+    # question_count = 50
+    # order = 'n/a'
+    # if (question_count / data_len) < .3:
+    #     first_sample = int(data_len / 3)
+    # elif (question_count / data_len) < .5:
+    #     first_sample = int(data_len / 2)
+    # if first_sample < question_count:
+    #    first_sample = question_count
+
+
+
+
+    # data_set = {}        
+    # category_counts = {}
+    # # first initialize each category for 0 count
+    
+    # def report_mean(c):
+    #     return float(sum(c.values()) / len(c.values()))
+
+        
+    # # create first sampled set 
+    # data_set_sample1 = {}
+    # chosen_idx = random.sample(list(data.keys()), int(first_sample))
+    # if order == 'ordered':
+    #     chosen_idx.sort()
+    # for i in chosen_idx:
+    #     data_set_sample1[i] = data[i]
+    
+    
+    # for k, v in data_set_sample1.items():
+    #     category_counts[v['category']] = 0
+    # category_counts['dummy'] = 1 # init one so that the average is > 0
+        
+    # for k, v in data_set_sample1.items():
+    #     # get category_count
+    #     if category_counts[v['category']] < report_mean(category_counts):
+    #         print("adding category %s" % v['category'])
+    #         data_set[k] = v
+    #         category_counts[v['category']] = category_counts[v['category']] + 1
