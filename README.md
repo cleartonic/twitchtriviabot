@@ -90,6 +90,6 @@ The GUI and these commands below will yield the same results. Some commands are 
 + !score - Reports user’s score (reports session score, total score for all trivia, and total wins for all trivia)
 
 # Credits
-Created by [@cleartonic][https://twitter.com/cleartonic]
+Created by [@cleartonic](https://twitter.com/cleartonic)
 
 Thanks to cormac-obrien’s publicly available instructions to navigate Twitch's IRC API via Python & socket, which was used in various forms within this release (http://www.instructables.com/id/Twitchtv-Moderator-Bot/)
