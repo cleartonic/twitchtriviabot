@@ -7,3 +7,7 @@ venv/*
 twitchtriviabot.spec
 setup.py
 temp.pickle
+requirements.txt
+__pycache__/*
+.git/*
+notes.txt

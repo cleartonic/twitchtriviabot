@@ -1,14 +1,15 @@
 file_name: triviaset.csv
-question_count: 25
-hint_time1: 10
-hint_time2: 20
-skip_time: 30
-question_delay: 5
+question_count: 300
+hint_time1: 20
+hint_time2: 40
+skip_time: 60
+question_delay: 15
 question_bonusvalue: 3
 mode: single
 music_mode: false
 order: random
-category_distribution: random
+category_distribution: distributed
 length: finite
-admins: admin
+admins: 
 output: true
+csv_encoding: utf-8
