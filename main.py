@@ -20,12 +20,12 @@ from PyQt5 import QtCore, QtGui, QtTest
 from PyQt5.QtGui import QPixmap, QIntValidator, QPalette, QColor
 from PyQt5.QtCore import QThread, pyqtSignal, QTimer
 
-try:
-    THIS_FILEPATH = os.path.dirname( sys.executable)
-    THIS_FILENAME = os.path.basename(sys.executable)
-except:
-    THIS_FILEPATH = os.path.dirname( __file__ )
-    THIS_FILENAME = os.path.basename(__file__)
+# try:
+#     THIS_FILEPATH = os.path.dirname( sys.executable)
+#     THIS_FILENAME = os.path.basename(sys.executable)
+# except:
+THIS_FILEPATH = os.path.dirname( __file__ )
+THIS_FILENAME = os.path.basename(__file__)
 
 
 try:    
@@ -44,7 +44,7 @@ except:
                     level=logging.DEBUG)
         
 
-VERSION_NUM = "2.2.1"
+VERSION_NUM = "2.2.2"
 # INFO_MESSAGE = 'Twitch Trivia Bot loaded. Version %s. Developed by cleartonic. %s' % (VERSION_NUM, random.randint(0,10000))
 INFO_MESSAGE = 'Twitch Trivia Bot loaded.'
 
@@ -793,11 +793,15 @@ class Session(object):
                 self.ts = {}
                 for idx, i in enumerate(data):
                     try:
-                        category, question, answer, answer2, creator = i
-                        if answer != '' and category != '' and question != '':
-                            self.ts[idx] = {'category':category, 'question':question, 'answer':answer,'answer2':answer2,'creator':creator}
-                        elif question.lower() != 'question':
+                        answer, answer2, answer3, answer4, answer5 = None, None, None, None, None
+                        if len(i) == 8:
+                            category, question, answer, answer2, answer3, answer4, answer5, creator = i
+                        else:
+                            category, question, answer, answer2, creator = i
+                        if question.lower() == 'question':
                             logging.debug("Data line was ignored for csv header")
+                        elif answer != '' and category != '' and question != '':
+                            self.ts[idx] = {'category':category, 'question':question, 'answer':answer,'answer2':answer2, 'answer3':answer3, 'answer4':answer4, 'answer5':answer5,'creator':creator}
                         else:
                             logging.debug("Data line was ignored, make sure category, question and answer are non null fields: %s" % i)
                     except:
@@ -812,6 +816,7 @@ class Session(object):
                     self.ts = new_ts
                 
                 self.tsrows = len(self.ts.keys())
+                
                 
                 if self.tsrows < self.session_config['question_count']:
                     self.session_config['question_count'] = int(self.tsrows)
@@ -838,6 +843,7 @@ class Session(object):
                 else:
                     self.question_count = len(self.questions)
     
+                
                 logging.debug("Finished setting up Session.")
                 
         except Exception as e:
@@ -871,6 +877,7 @@ class Session(object):
             question_count = data_len
         order = self.session_config['order']
         
+        first_sample = 0
         if (question_count / data_len) < .3:
             first_sample = int(data_len / 3)
         elif (question_count / data_len) < .5:
@@ -887,7 +894,7 @@ class Session(object):
         # first initialize each category for 0 count
         
         def report_mean(c):
-            return float(sum(c.values()) / len(c.values()))
+            return float(sum(c.values()) / len(c.values())) + 1
     
             
         # create first sampled set 
@@ -908,17 +915,24 @@ class Session(object):
         while iter_num < 10000 and placed_num < question_count:
             for k, v in data_set_sample1.items():
                 # get category_count
-                if category_counts[v['category']] <= report_mean(category_counts) or category_counts[v['category']] == 0:
+                reported_mean = report_mean(category_counts)
+                category_report = category_counts[v['category']]
+                flag_a = category_report <= reported_mean
+                flag_b = category_report == 0
+                # print("%s %s %s %s" % (category_report, reported_mean, flag_a, flag_b))
+                if flag_a or flag_b:
                     # print("adding category %s" % v['category'])
                     if k not in data_set.keys():
                         data_set[k] = v
                         category_counts[v['category']] = category_counts[v['category']] + 1
                         placed_num += 1
                         if placed_num >= question_count:
+                            print("Break by placed_num >= question_count")
                             break
 
                 iter_num += 1
                 if iter_num >= 10000:
+                    print("Break by iter_num")
                     break
         # print("ITER %s PLACED %s" % (iter_num,placed_num))
         # final shuffle
@@ -933,7 +947,7 @@ class Session(object):
 
         
         self.ss = data_set_final
-        print(len(data_set_final.keys()))
+        # print(len(data_set_final.keys()))
         logging.debug("Category counts breakdown:")
         for k, v in category_counts.items():
             logging.debug("%s %s" % ("{:50}".format("%s:" % k), v))
@@ -1323,8 +1337,9 @@ class Question(object):
             self.creator = ''
         else:
             self.question = str(row['question'][0]).upper() + row['question'][1:]
-            self.answers = [row['answer'],row['answer2']]
+            self.answers = [row['answer'],row['answer2'],row['answer3'],row['answer4'],row['answer5']]
             self.answers = [i for i in self.answers if i != '']
+            self.answers = [i for i in self.answers if i == i]
             self.category = row['category']
             if 'category' in row:
                 self.creator = row['creator']
@@ -1383,6 +1398,7 @@ class Question(object):
             
     def answer_string(self,user, trivia_num):
         return "%s answers question #%s correctly! The answer is ** %s ** with a %s point value. %s has %s points!" % (user.username, trivia_num ,self.answers[0], self.point_value, user.username, user.points)
+    # "PETSHOP %s answers question #%s correctly! The answer is ** %s ** with a %s point value. %s has %s points!" % (user.username, trivia_num ,self.answers[0], self.point_value, user.username, user.points)
 
     def answer_string_poll(self,user, point_val, trivia_num):
         if self.answered_user_list_remaining:

@@ -11,3 +11,4 @@ requirements.txt
 __pycache__/*
 .git/*
 notes.txt
+releases/*
